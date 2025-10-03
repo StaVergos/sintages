@@ -1,0 +1,21 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+venv/
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Package manager files
+.ruff_cache/
+
+# Secret files
+.env
