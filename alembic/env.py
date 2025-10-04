@@ -9,7 +9,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from src.core.config import config as app_config
 from src.db.base import Base
-import src.db.models.users  # noqa: F401
+from src.db.models.users import User, Ingredient  # noqa: F401
 
 alembic_config = context.config
 

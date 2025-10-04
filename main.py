@@ -91,9 +91,7 @@ async def update_user(
 @app.get("/ingredients")
 async def get_ingredients(db=Depends(get_db)) -> list[GetIngredientSchema]:
     ingredients = db.query(Ingredient).all()
-    return [
-        GetIngredientSchema.model_validate(ingredient) for ingredient in ingredients
-    ]
+    return [GetIngredientSchema.model_validate(ing) for ing in ingredients]
 
 
 @app.get("/ingredients/{ingredient_id}")
