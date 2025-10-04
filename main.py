@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from src.db.postgresql import get_db
-from src.db.models.users import User, Ingredient
+from src.db.models.users import User
+from src.db.models.ingredients import Ingredient
 from src.api.schemas import (
     GetUserSchema,
     CreateUserSchema,
