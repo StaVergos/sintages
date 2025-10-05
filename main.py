@@ -97,7 +97,7 @@ async def get_ingredients(db=Depends(get_db)) -> list[GetIngredientSchema]:
 
 @app.get("/ingredients/{ingredient_id}")
 async def get_ingredient(ingredient_id: int, db=Depends(get_db)) -> GetIngredientSchema:
-    ingredient = db.query(Ingredient).filter(Ingredient.ing_id == ingredient_id).first()
+    ingredient = db.query(Ingredient).filter(Ingredient.id == ingredient_id).first()
     if ingredient is None:
         raise HTTPException(status_code=404, detail="Ingredient not found")
     return GetIngredientSchema.model_validate(ingredient)
@@ -108,19 +108,17 @@ async def create_ingredient(
     ingredient: CreateIngredientSchema, db=Depends(get_db)
 ) -> GetIngredientSchema:
     existing_ingredient = (
-        db.query(Ingredient)
-        .filter((Ingredient.ing_name == ingredient.ing_name))
-        .first()
+        db.query(Ingredient).filter((Ingredient.name == ingredient.name)).first()
     )
 
     if existing_ingredient:
         raise HTTPException(status_code=409, detail="Ingredient already exists")
 
     new_ingredient = Ingredient(
-        ing_name=ingredient.ing_name,
-        ing_amount=ingredient.ing_amount,
-        ing_grams=ingredient.ing_grams,
-        ing_category=ingredient.ing_category,
+        name=ingredient.name,
+        quantity=ingredient.quantity,
+        grams=ingredient.grams,
+        category=ingredient.category,
     )
     db.add(new_ingredient)
     db.commit()

@@ -25,14 +25,14 @@ class GetUserSchema(UserSchema):
 class IngredientSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    ing_name: str = Field(max_length=50, examples=["Broccoli"])
-    ing_amount: int = Field(ge=0, examples=[2])
-    ing_grams: int = Field(ge=0, examples=[250])
-    ing_category: str = Field(max_length=50, examples=["Vegetables"])
+    name: str = Field(max_length=50, examples=["Broccoli"])
+    quantity: int = Field(ge=0, examples=[2])
+    grams: int = Field(ge=0, examples=[250])
+    category: str = Field(max_length=50, examples=["Vegetables"])
 
 
 class GetIngredientSchema(IngredientSchema):
-    ing_id: int = Field(..., examples=[1])
+    id: int = Field(..., examples=[1])
 
 
 class CreateIngredientSchema(IngredientSchema):
