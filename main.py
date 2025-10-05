@@ -1,7 +1,14 @@
 from fastapi import FastAPI, Depends, HTTPException
 from src.db.postgresql import get_db
-from src.db.models import User
-from src.api.schemas import GetUserSchema, CreateUserSchema, UpdateUserSchema
+from src.db.models.users import User
+from src.db.models.ingredients import Ingredient
+from src.api.schemas import (
+    GetUserSchema,
+    CreateUserSchema,
+    UpdateUserSchema,
+    GetIngredientSchema,
+    CreateIngredientSchema,
+)
 from src.core.security import hash_password
 
 
@@ -80,3 +87,38 @@ async def update_user(
     db.commit()
     db.refresh(existing_user)
     return GetUserSchema.model_validate(existing_user)
+
+
+@app.get("/ingredients")
+async def get_ingredients(db=Depends(get_db)) -> list[GetIngredientSchema]:
+    ingredients = db.query(Ingredient).all()
+    return [GetIngredientSchema.model_validate(ing) for ing in ingredients]
+
+
+@app.get("/ingredients/{ingredient_id}")
+async def get_ingredient(ingredient_id: int, db=Depends(get_db)) -> GetIngredientSchema:
+    ingredient = db.query(Ingredient).filter(Ingredient.id == ingredient_id).first()
+    if ingredient is None:
+        raise HTTPException(status_code=404, detail="Ingredient not found")
+    return GetIngredientSchema.model_validate(ingredient)
+
+
+@app.post("/ingredients")
+async def create_ingredient(
+    ingredient: CreateIngredientSchema, db=Depends(get_db)
+) -> GetIngredientSchema:
+    existing_ingredient = (
+        db.query(Ingredient).filter((Ingredient.name == ingredient.name)).first()
+    )
+
+    if existing_ingredient:
+        raise HTTPException(status_code=409, detail="Ingredient already exists")
+
+    new_ingredient = Ingredient(
+        name=ingredient.name,
+        is_vegan=ingredient.is_vegan,
+    )
+    db.add(new_ingredient)
+    db.commit()
+    db.refresh(new_ingredient)
+    return GetIngredientSchema.model_validate(new_ingredient)

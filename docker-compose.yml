@@ -1,7 +1,7 @@
 services:
   app:
     build: .
-    image: euroleague-insights:latest
+    image: sintages:latest
     env_file: .env
     restart: always
     ports:

@@ -20,3 +20,18 @@ class UpdateUserSchema(UserSchema):
 
 class GetUserSchema(UserSchema):
     id: int = Field(..., examples=[1])
+
+
+class IngredientSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    name: str = Field(max_length=50, examples=["Broccoli"])
+    is_vegan: bool = Field(..., examples=[True])
+
+
+class GetIngredientSchema(IngredientSchema):
+    id: int = Field(..., examples=[1])
+
+
+class CreateIngredientSchema(IngredientSchema):
+    pass
