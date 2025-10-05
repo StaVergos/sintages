@@ -116,9 +116,7 @@ async def create_ingredient(
 
     new_ingredient = Ingredient(
         name=ingredient.name,
-        quantity=ingredient.quantity,
-        grams=ingredient.grams,
-        category=ingredient.category,
+        is_vegan=ingredient.is_vegan,
     )
     db.add(new_ingredient)
     db.commit()

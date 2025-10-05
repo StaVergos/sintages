@@ -26,9 +26,7 @@ class IngredientSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     name: str = Field(max_length=50, examples=["Broccoli"])
-    quantity: int = Field(ge=0, examples=[2])
-    grams: int = Field(ge=0, examples=[250])
-    category: str = Field(max_length=50, examples=["Vegetables"])
+    is_vegan: bool = Field(..., examples=[True])
 
 
 class GetIngredientSchema(IngredientSchema):
