@@ -1,7 +1,7 @@
+# alembic/env.py
 from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
-
 import sys
 from pathlib import Path
 
@@ -14,10 +14,13 @@ from src.db.models.ingredients import Ingredient  # noqa: F401
 
 alembic_config = context.config
 
-alembic_config.set_main_option(
-    "sqlalchemy.url",
-    f"{app_config.DB_URL}",
-)
+
+url_from_cfg = alembic_config.get_main_option("sqlalchemy.url")
+if url_from_cfg == "driver://user:pass@localhost/dbname":
+    url_from_cfg = app_config.DB_URL
+db_url = url_from_cfg
+alembic_config.set_main_option("sqlalchemy.url", db_url)
+
 
 if alembic_config.config_file_name is not None:
     fileConfig(alembic_config.config_file_name)
