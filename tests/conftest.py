@@ -86,3 +86,45 @@ def override_get_db(db: Session):
     fastapi_app.dependency_overrides[get_db] = _override
     yield
     fastapi_app.dependency_overrides.clear()
+
+
+@pytest.fixture()
+def user(db: Session):
+    from src.db.models.users import User
+    from src.core.security import hash_password
+    from tests.factories import make_user_payload
+
+    payload = make_user_payload()
+    hashed_password = hash_password(payload.password)
+    row = User(
+        username=payload.username,
+        email=payload.email,
+        full_name=payload.full_name,
+        is_active=payload.is_active,
+        hashed_password=hashed_password,
+    )
+    db.add(row)
+    db.flush()
+    return row
+
+
+@pytest.fixture()
+def user_factory(db):
+    from src.db.models.users import User
+    from src.core.security import hash_password
+    from tests.factories import make_user_payload
+
+    def _create(**overrides):
+        payload = make_user_payload(**overrides)
+        row = User(
+            username=payload.username,
+            email=payload.email,
+            full_name=payload.full_name,
+            is_active=payload.is_active,
+            hashed_password=hash_password(payload.password),
+        )
+        db.add(row)
+        db.flush()
+        return row
+
+    return _create
