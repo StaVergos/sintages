@@ -78,12 +78,12 @@ def db(session_factory) -> Generator[Session, None, None]:
 
 @pytest.fixture(autouse=True)
 def override_get_db(db: Session):
-    from src.db.postgresql import get_db
+    from src.core.dependencies import get_db as app_get_db
 
     def _override():
         yield db
 
-    fastapi_app.dependency_overrides[get_db] = _override
+    fastapi_app.dependency_overrides[app_get_db] = _override
     yield
     fastapi_app.dependency_overrides.clear()
 
