@@ -3,10 +3,11 @@ from src.api.users.schemas import CreateUserSchema, GetUserSchema
 from src.db.models.users import User
 from src.core.security import hash_password
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 
 class UserRepository:
-    def __init__(self, db):
+    def __init__(self, db: Session):
         self.db = db
 
     def get_all_users(self) -> list[GetUserSchema]:
