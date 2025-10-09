@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from faker import Faker
-from src.api.schemas import CreateUserSchema
+from src.api.users.schemas import CreateUserSchema
 
 fake = Faker()
 
