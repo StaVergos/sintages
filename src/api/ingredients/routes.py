@@ -6,7 +6,7 @@ from src.api.ingredients.dependencies import get_ingredient_repository
 router = APIRouter()
 
 
-@router.get("/ingredients", response_model=list[GetIngredientSchema])
+@router.get("/", response_model=list[GetIngredientSchema])
 async def get_ingredients(
     ingredient_repository: IngredientRepository = Depends(get_ingredient_repository),
 ) -> list[GetIngredientSchema]:
@@ -24,7 +24,7 @@ async def get_ingredient(
     return ingredient
 
 
-@router.post("/ingredients", response_model=GetIngredientSchema)
+@router.post("/", response_model=GetIngredientSchema)
 async def create_ingredient(
     ingredient: CreateIngredientSchema,
     ingredient_repository: IngredientRepository = Depends(get_ingredient_repository),

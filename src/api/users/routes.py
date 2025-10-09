@@ -6,14 +6,14 @@ from src.api.users.dependencies import get_user_repository
 router = APIRouter()
 
 
-@router.get("/users", response_model=list[GetUserSchema])
+@router.get("/", response_model=list[GetUserSchema])
 async def get_users(
     user_repository: UserRepository = Depends(get_user_repository),
 ) -> list[GetUserSchema]:
     return user_repository.get_all_users()
 
 
-@router.get("/users/{user_id}", response_model=GetUserSchema)
+@router.get("/{user_id}", response_model=GetUserSchema)
 async def get_user(
     user_id: int, user_repository: UserRepository = Depends(get_user_repository)
 ):
@@ -23,7 +23,7 @@ async def get_user(
     return user
 
 
-@router.post("/users", response_model=GetUserSchema)
+@router.post("/", response_model=GetUserSchema)
 async def create_user(
     user: CreateUserSchema,
     user_repository: UserRepository = Depends(get_user_repository),
@@ -31,7 +31,7 @@ async def create_user(
     return user_repository.create_user(user)
 
 
-@router.put("/users/{user_id}", response_model=GetUserSchema)
+@router.put("/{user_id}", response_model=GetUserSchema)
 async def update_user(
     user_id: int,
     user: UpdateUserSchema,
