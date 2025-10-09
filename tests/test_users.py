@@ -34,3 +34,15 @@ def test_list_users(client: TestClient, user_factory: callable):
     assert len(resp.json()) == 2
     ids = {u["id"] for u in resp.json()}
     assert ids == {u1.id, u2.id}
+
+
+@pytest.mark.anyio
+def test_update_user(client: TestClient, user: User):
+    new_payload = make_user_payload()
+    resp = client.put(f"/users/{user.id}", json=new_payload.model_dump())
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["id"] == user.id
+    assert data["username"] == new_payload.username
+    assert data["email"] == new_payload.email
+    assert data["full_name"] == new_payload.full_name
