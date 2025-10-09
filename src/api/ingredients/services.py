@@ -5,10 +5,11 @@ from src.api.ingredients.schemas import (
     CreateIngredientSchema,
 )
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 
 class IngredientRepository:
-    def __init__(self, db):
+    def __init__(self, db: Session):
         self.db = db
 
     def get_all_ingredients(self) -> list[GetIngredientSchema]:
@@ -34,7 +35,7 @@ class IngredientRepository:
     ) -> GetIngredientSchema:
         try:
             new_ingredient = Ingredient(
-                name=ingredient_data.name.lower(),
+                name=ingredient_data.name,
                 is_vegan=ingredient_data.is_vegan,
             )
             return self.add_ingredient(new_ingredient)
