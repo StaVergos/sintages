@@ -1,5 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-from src.api.ingredients.schemas import CreateIngredientSchema, GetIngredientSchema
+from src.api.ingredients.schemas import (
+    CreateIngredientSchema,
+    GetIngredientSchema,
+    UpdateIngredientSchema,
+)
 from src.api.ingredients.services import IngredientRepository
 from src.api.ingredients.dependencies import get_ingredient_repository
 
@@ -30,3 +34,12 @@ async def create_ingredient(
     ingredient_repository: IngredientRepository = Depends(get_ingredient_repository),
 ) -> GetIngredientSchema:
     return ingredient_repository.create_ingredient(ingredient)
+
+
+@router.put("/", response_model=GetIngredientSchema)
+async def update_ingredient(
+    ingredient_id: int,
+    ingredient: UpdateIngredientSchema,
+    ingredient_repository: IngredientRepository = Depends(get_ingredient_repository),
+) -> GetIngredientSchema:
+    return ingredient_repository.update_ingredient(ingredient_id, ingredient)

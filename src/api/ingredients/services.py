@@ -3,6 +3,7 @@ from src.db.models.ingredients import Ingredient
 from src.api.ingredients.schemas import (
     GetIngredientSchema,
     CreateIngredientSchema,
+    UpdateIngredientSchema,
 )
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -39,5 +40,22 @@ class IngredientRepository:
                 is_vegan=ingredient_data.is_vegan,
             )
             return self.add_ingredient(new_ingredient)
+        except IntegrityError:
+            raise HTTPException(status_code=409, detail="Ingredient already exists")
+
+    def update_ingredient(
+        self, ingredient_id: int, ingredient_data: CreateIngredientSchema
+    ) -> GetIngredientSchema:
+        ingredient = (
+            self.db.query(Ingredient).filter(Ingredient.id == ingredient_id).first()
+        )
+        if not ingredient:
+            raise HTTPException(status_code=404, detail="Ingredient not found")
+        try:
+            ingredient.name = ingredient_data.name
+            ingredient.is_vegan = ingredient_data.is_vegan
+            self.db.commit()
+            self.db.refresh(ingredient)
+            return GetIngredientSchema.model_validate(ingredient)
         except IntegrityError:
             raise HTTPException(status_code=409, detail="Ingredient already exists")
