@@ -1,6 +1,8 @@
 from src.db.base import Base, TimestampMixin
-from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from src.db.models.categories import Category
+from sqlalchemy import String, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from typing import List
 
 
 class Ingredient(Base, TimestampMixin):
@@ -11,6 +13,8 @@ class Ingredient(Base, TimestampMixin):
         String(100), unique=True, nullable=False, name="name"
     )
     is_vegan: Mapped[bool] = mapped_column(nullable=False, default=False)
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
+    category: Mapped[List["Category"]] = relationship(back_populates="Ingredient")
 
     @property
     def name(self) -> str:
