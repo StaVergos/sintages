@@ -36,7 +36,7 @@ async def create_ingredient(
     return ingredient_repository.create_ingredient(ingredient)
 
 
-@router.put("/", response_model=GetIngredientSchema)
+@router.put("/{ingredient_id}", response_model=GetIngredientSchema)
 async def update_ingredient(
     ingredient_id: int,
     ingredient: UpdateIngredientSchema,

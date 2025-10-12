@@ -44,7 +44,7 @@ class IngredientRepository:
             raise HTTPException(status_code=409, detail="Ingredient already exists")
 
     def update_ingredient(
-        self, ingredient_id: int, ingredient_data: CreateIngredientSchema
+        self, ingredient_id: int, ingredient_data: UpdateIngredientSchema
     ) -> GetIngredientSchema:
         ingredient = (
             self.db.query(Ingredient).filter(Ingredient.id == ingredient_id).first()
