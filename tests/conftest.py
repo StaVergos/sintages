@@ -128,3 +128,67 @@ def user_factory(db):
         return row
 
     return _create
+
+
+@pytest.fixture()
+def ingredient(db: Session):
+    from src.db.models.ingredients import Ingredient
+    from tests.factories import make_ingredient_payload
+
+    payload = make_ingredient_payload()
+
+    row = Ingredient(name=payload.name, is_vegan=payload.is_vegan)
+    db.add(row)
+    db.flush()
+    return row
+
+
+@pytest.fixture()
+def ingredient_factory(db):
+    from src.db.models.ingredients import Ingredient
+    from tests.factories import make_ingredient_payload
+
+    def _create(**overrides):
+        payload = make_ingredient_payload(**overrides)
+        row = Ingredient(
+            name=payload.name,
+            is_vegan=payload.is_vegan,
+        )
+        db.add(row)
+        db.flush()
+        return row
+
+    return _create
+
+
+@pytest.fixture()
+def category(db: Session):
+    from src.db.models.categories import Category
+    from tests.factories import make_category_payload
+
+    payload = make_category_payload()
+    row = Category(
+        name=payload.name,
+        #        sub_name=payload.sub_name,
+    )
+    db.add(row)
+    db.flush()
+    return row
+
+
+@pytest.fixture()
+def category_factory(db):
+    from src.db.models.categories import Category
+    from tests.factories import make_category_payload
+
+    def _create(**overrides):
+        payload = make_category_payload(**overrides)
+        row = Category(
+            name=payload.name,
+            #           sub_name=payload.sub_name,
+        )
+        db.add(row)
+        db.flush()
+        return row
+
+    return _create
