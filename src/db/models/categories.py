@@ -1,8 +1,10 @@
+from typing import List, TYPE_CHECKING
 from src.db.base import Base, TimestampMixin
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import List
 
+if TYPE_CHECKING:
+    from src.db.models.ingredients import Ingredient
 
 class Category(Base, TimestampMixin):
     __tablename__ = "categories"

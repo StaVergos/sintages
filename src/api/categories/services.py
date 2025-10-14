@@ -33,7 +33,6 @@ class CategoryRepository:
         try:
             new_category = Category(
                 name=category_data.name,
-                #                sub_name=category_data.sub_name,
             )
             return self.add_category(new_category)
         except IntegrityError:
@@ -47,7 +46,6 @@ class CategoryRepository:
             raise HTTPException(status_code=404, detail="Category not found")
         try:
             category.name = category_data.name
-            #            category.sub_name = category_data.sub_name
             self.db.commit()
             self.db.refresh(category)
             return GetCategorySchema.model_validate(category)
