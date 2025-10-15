@@ -17,11 +17,12 @@ class CategorySchema(BaseSchema):
 
 class GetCategorySchema(CategorySchema):
     id: int = Field(..., examples=[1])
+    created_at: datetime = Field(..., examples=["2023-10-01T12:00:00Z"])
     updated_at: datetime = Field(..., examples=["2023-10-01T12:00:00Z"])
 
 
 class CreateCategorySchema(CategorySchema):
-    created_at: datetime = Field(..., examples=["2023-10-01T12:00:00Z"])
+    pass
 
 
 class UpdateCategorySchema(CategorySchema):

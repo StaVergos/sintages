@@ -169,7 +169,6 @@ def category(db: Session):
     payload = make_category_payload()
     row = Category(
         name=payload.name,
-        #        sub_name=payload.sub_name,
     )
     db.add(row)
     db.flush()
@@ -185,7 +184,6 @@ def category_factory(db):
         payload = make_category_payload(**overrides)
         row = Category(
             name=payload.name,
-            #           sub_name=payload.sub_name,
         )
         db.add(row)
         db.flush()

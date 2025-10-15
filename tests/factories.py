@@ -28,5 +28,4 @@ def make_ingredient_payload() -> CreateIngredientSchema:
 def make_category_payload() -> CreateCategorySchema:
     return CreateCategorySchema(
         name=fake.unique.category_name(),
-        # sub_name=fake.unique.category_sub_name(),
     )
