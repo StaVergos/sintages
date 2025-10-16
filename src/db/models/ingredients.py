@@ -1,6 +1,8 @@
+from typing import Optional
 from src.db.base import Base, TimestampMixin
-from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from src.db.models.categories import Category
 
 
 class Ingredient(Base, TimestampMixin):
@@ -11,6 +13,10 @@ class Ingredient(Base, TimestampMixin):
         String(100), unique=True, nullable=False, name="name"
     )
     is_vegan: Mapped[bool] = mapped_column(nullable=False, default=False)
+    category_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("categories.id"), nullable=True
+    )
+    category: Mapped["Category"] = relationship(back_populates="ingredients")
 
     @property
     def name(self) -> str:

@@ -3,10 +3,8 @@ from pydantic import Field, field_validator, field_serializer
 from src.api.schemas import BaseSchema
 
 
-class IngredientSchema(BaseSchema):
-    name: str = Field(max_length=50, examples=["Broccoli"])
-    is_vegan: bool = Field(..., examples=[True])
-    category_id: int | None = Field(examples=[1], default=None)
+class CategorySchema(BaseSchema):
+    name: str = Field(max_length=50, examples=["Fruits"])
 
     @field_validator("name")
     @classmethod
@@ -18,17 +16,15 @@ class IngredientSchema(BaseSchema):
         return value.capitalize()
 
 
-class GetIngredientSchema(IngredientSchema):
+class GetCategorySchema(CategorySchema):
     id: int = Field(..., examples=[1])
     created_at: datetime = Field(..., examples=["2023-10-01T12:00:00Z"])
     updated_at: datetime | None = Field(..., examples=["2023-10-01T12:00:00Z"])
 
 
-class CreateIngredientSchema(IngredientSchema):
+class CreateCategorySchema(CategorySchema):
     pass
 
 
-class UpdateIngredientSchema(IngredientSchema):
-    name: str | None = Field(examples=["Broccoli"], default=None)
-    is_vegan: bool | None = Field(examples=[True], default=None)
-    category_id: int | None = Field(examples=[1], default=None)
+class UpdateCategorySchema(CategorySchema):
+    name: str | None = Field(examples=["Fruits"], default=None)
