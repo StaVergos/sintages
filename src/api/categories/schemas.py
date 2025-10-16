@@ -7,6 +7,7 @@ class CategorySchema(BaseSchema):
     name: str = Field(max_length=50, examples=["Fruits"])
 
     @field_validator("name")
+    @classmethod
     def validate_name(cls, value: str) -> str:
         return value.lower()
 
@@ -18,7 +19,7 @@ class CategorySchema(BaseSchema):
 class GetCategorySchema(CategorySchema):
     id: int = Field(..., examples=[1])
     created_at: datetime = Field(..., examples=["2023-10-01T12:00:00Z"])
-    updated_at: datetime = Field(..., examples=["2023-10-01T12:00:00Z"])
+    updated_at: datetime | None = Field(..., examples=["2023-10-01T12:00:00Z"])
 
 
 class CreateCategorySchema(CategorySchema):

@@ -10,7 +10,7 @@ def test_create_category(client: TestClient):
     resp = client.post("/categories", json=payload.model_dump())
     assert resp.status_code == 200
     data = resp.json()
-    assert data["name"] == payload.name
+    assert data["name"] == payload.name.capitalize()
     assert "id" in data
 
 
@@ -41,4 +41,4 @@ def test_update_category(client: TestClient, category: Category):
     assert resp.status_code == 200
     data = resp.json()
     assert data["id"] == category.id
-    assert data["name"] == new_payload.name
+    assert data["name"] == new_payload.name.capitalize()

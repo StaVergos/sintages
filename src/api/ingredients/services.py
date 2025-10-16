@@ -38,6 +38,7 @@ class IngredientRepository:
             new_ingredient = Ingredient(
                 name=ingredient_data.name,
                 is_vegan=ingredient_data.is_vegan,
+                category_id=ingredient_data.category_id,
             )
             return self.add_ingredient(new_ingredient)
         except IntegrityError:
@@ -54,6 +55,7 @@ class IngredientRepository:
         try:
             ingredient.name = ingredient_data.name
             ingredient.is_vegan = ingredient_data.is_vegan
+            ingredient.category_id = ingredient_data.category_id
             self.db.commit()
             self.db.refresh(ingredient)
             return GetIngredientSchema.model_validate(ingredient)
