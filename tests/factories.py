@@ -22,7 +22,7 @@ def make_ingredient_payload() -> CreateIngredientSchema:
     return CreateIngredientSchema(
         name=fake.unique.name(),
         is_vegan=False,
-        category_id=fake.random_int(min=1, max=10),
+        category_id=None,
     )
 
 

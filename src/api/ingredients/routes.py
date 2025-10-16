@@ -17,7 +17,7 @@ async def get_ingredients(
     return ingredient_repository.get_all_ingredients()
 
 
-@router.get("/ingredients/{ingredient_id}", response_model=GetIngredientSchema)
+@router.get("/{ingredient_id}", response_model=GetIngredientSchema)
 async def get_ingredient(
     ingredient_id: int,
     ingredient_repository: IngredientRepository = Depends(get_ingredient_repository),

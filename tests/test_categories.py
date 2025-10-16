@@ -20,7 +20,7 @@ def test_get_category(client: TestClient, category: Category):
     assert resp.status_code == 200
     data = resp.json()
     assert data["id"] == category.id
-    assert data["name"] == category.name
+    assert data["name"] == category.name.capitalize()
 
 
 @pytest.mark.anyio

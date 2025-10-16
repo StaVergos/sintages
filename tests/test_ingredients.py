@@ -10,7 +10,7 @@ def test_create_ingredient(client: TestClient):
     resp = client.post("/ingredients", json=payload.model_dump())
     assert resp.status_code == 200
     data = resp.json()
-    assert data["name"] == payload.name
+    assert data["name"] == payload.name.capitalize()
     assert "id" in data
 
 
@@ -20,7 +20,7 @@ def test_get_ingredient(client: TestClient, ingredient: Ingredient):
     assert resp.status_code == 200
     data = resp.json()
     assert data["id"] == ingredient.id
-    assert data["name"] == ingredient.name
+    assert data["name"] == ingredient.name.capitalize()
     assert data["category_id"] == ingredient.category_id
 
 
@@ -42,6 +42,6 @@ def test_update_ingredient(client: TestClient, ingredient: Ingredient):
     assert resp.status_code == 200
     data = resp.json()
     assert data["id"] == ingredient.id
-    assert data["name"] == new_payload.name
+    assert data["name"] == new_payload.name.capitalize()
     assert data["is_vegan"] == new_payload.is_vegan
     assert data["category_id"] == new_payload.category_id

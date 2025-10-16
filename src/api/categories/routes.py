@@ -17,7 +17,7 @@ async def get_categories(
     return category_repository.get_all_categories()
 
 
-@router.get("/categories/{category_id}", response_model=GetCategorySchema)
+@router.get("/{category_id}", response_model=GetCategorySchema)
 async def get_category(
     category_id: int,
     category_repository: CategoryRepository = Depends(get_category_repository),
