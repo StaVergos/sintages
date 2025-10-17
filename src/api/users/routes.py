@@ -21,7 +21,7 @@ async def get_user(
     return user
 
 
-@router.post("/", response_model=GetUserSchema)
+@router.post("/", response_model=GetUserSchema, status_code=201)
 async def create_user(
     user: CreateUserSchema,
     user_repository: UserRepository = Depends(get_user_repository),
