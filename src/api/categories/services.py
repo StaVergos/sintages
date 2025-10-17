@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from src.db.models.categories import Category
 from src.api.categories.schemas import (
     GetCategorySchema,
@@ -7,11 +7,17 @@ from src.api.categories.schemas import (
 )
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from src.core.exceptions import ErrorException
+from src.core.enums import ErrorKind
 
 
 class CategoryRepository:
     def __init__(self, db: Session):
         self.db = db
+
+    @property
+    def repo_name(self) -> str:
+        return "CategoryRepository"
 
     def get_all_categories(self) -> list[GetCategorySchema]:
         categories = self.db.query(Category).all()
@@ -21,7 +27,13 @@ class CategoryRepository:
         category = self.db.query(Category).filter(Category.id == category_id).first()
         if category:
             return GetCategorySchema.model_validate(category)
-        return None
+        else:
+            raise ErrorException(
+                code=status.HTTP_404_NOT_FOUND,
+                message="Category not found",
+                kind=ErrorKind.NOT_FOUND,
+                source=f"{self.repo_name}.get_category_by_id",
+            )
 
     def add_category(self, category: Category) -> GetCategorySchema:
         self.db.add(category)
@@ -36,7 +48,19 @@ class CategoryRepository:
             )
             return self.add_category(new_category)
         except IntegrityError:
-            raise HTTPException(status_code=409, detail="Category already exists")
+            raise ErrorException(
+                code=status.HTTP_409_CONFLICT,
+                message="Category name already exists",
+                kind=ErrorKind.CONFLICT,
+                source=f"{self.repo_name}.create_category",
+            )
+        except Exception:
+            raise ErrorException(
+                code=status.HTTP_500_ENTERNAL_SERVER_ERROR,
+                message="Internal server error",
+                kind=ErrorKind.INTERNAL,
+                source=f"{self.repo_name}.create_category",
+            )
 
     def update_category(
         self, category_id: int, category_data: UpdateCategorySchema
@@ -50,4 +74,9 @@ class CategoryRepository:
             self.db.refresh(category)
             return GetCategorySchema.model_validate(category)
         except IntegrityError:
-            raise HTTPException(status_code=409, detail="Category already exists")
+            raise ErrorException(
+                code=status.HTTP_409_CONFLICT,
+                message="Category name already exists",
+                kind=ErrorKind.CONFLICT,
+                source=f"{self.repo_name}.update_category",
+            )
