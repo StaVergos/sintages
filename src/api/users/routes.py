@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from src.api.users.schemas import CreateUserSchema, GetUserSchema, UpdateUserSchema
 from src.api.users.services import UserRepository
 from src.api.users.dependencies import get_user_repository
@@ -18,8 +18,6 @@ async def get_user(
     user_id: int, user_repository: UserRepository = Depends(get_user_repository)
 ):
     user = user_repository.get_user_by_id(user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
     return user
 
 
