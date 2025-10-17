@@ -26,7 +26,7 @@ async def get_category(
     return category
 
 
-@router.post("/", response_model=GetCategorySchema)
+@router.post("/", response_model=GetCategorySchema, status_code=201)
 async def create_category(
     category: CreateCategorySchema,
     category_repository: CategoryRepository = Depends(get_category_repository),
