@@ -23,8 +23,6 @@ async def get_category(
     category_repository: CategoryRepository = Depends(get_category_repository),
 ):
     category = category_repository.get_category_by_id(category_id)
-    if category is None:
-        raise HTTPException(status_code=404, detail="Category not found")
     return category
 
 
