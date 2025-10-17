@@ -26,7 +26,7 @@ async def get_ingredient(
     return ingredient
 
 
-@router.post("/", response_model=GetIngredientSchema)
+@router.post("/", response_model=GetIngredientSchema, status_code=201)
 async def create_ingredient(
     ingredient: CreateIngredientSchema,
     ingredient_repository: IngredientRepository = Depends(get_ingredient_repository),
