@@ -1,6 +1,14 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from src.core.enums import ErrorKind
+
+
+class BaseSchema(BaseModel):
+    """
+    Base schema: serialize enums by their values.
+    """
+
+    model_config = ConfigDict(use_enum_values=True)
 
 
 class ErrorSchema(BaseModel):
@@ -13,3 +21,10 @@ class ErrorSchema(BaseModel):
 
     def as_exception_response(self) -> dict:
         return self.model_dump(exclude={"code"})
+
+
+class ErrorResponse(BaseSchema):
+    errors: list[ErrorSchema] = Field(
+        default_factory=list,
+        description="List of errors encountered",
+    )
