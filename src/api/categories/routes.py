@@ -6,8 +6,16 @@ from src.api.categories.schemas import (
 )
 from src.api.categories.services import CategoryRepository
 from src.api.categories.dependencies import get_category_repository
+from src.core.schemas import ErrorResponse
 
 router = APIRouter()
+
+error_responses = {
+    404: {"model": ErrorResponse, "description": "Category not found"},
+    409: {"model": ErrorResponse, "description": "Category already exists"},
+    422: {"model": ErrorResponse, "description": "Invalid category input format"},
+    500: {"model": ErrorResponse, "description": "Internal server error"},
+}
 
 
 @router.get("/", response_model=list[GetCategorySchema])
@@ -26,7 +34,12 @@ async def get_category(
     return category
 
 
-@router.post("/", response_model=GetCategorySchema, status_code=201)
+@router.post(
+    "/",
+    response_model=GetCategorySchema,
+    status_code=201,
+    responses=error_responses,
+)
 async def create_category(
     category: CreateCategorySchema,
     category_repository: CategoryRepository = Depends(get_category_repository),
@@ -34,7 +47,11 @@ async def create_category(
     return category_repository.create_category(category)
 
 
-@router.put("/{category_id}", response_model=GetCategorySchema)
+@router.put(
+    "/{category_id}",
+    response_model=GetCategorySchema,
+    responses=error_responses,
+)
 async def update_category(
     category_id: int,
     category: UpdateCategorySchema,
