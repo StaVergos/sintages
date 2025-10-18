@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from src.api.categories.schemas import (
     CreateCategorySchema,
     GetCategorySchema,
