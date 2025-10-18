@@ -6,8 +6,16 @@ from src.api.ingredients.schemas import (
 )
 from src.api.ingredients.services import IngredientRepository
 from src.api.ingredients.dependencies import get_ingredient_repository
+from src.core.schemas import ErrorResponse
 
 router = APIRouter()
+
+error_responses = {
+    404: {"model": ErrorResponse, "description": "Ingredient not found"},
+    409: {"model": ErrorResponse, "description": "Ingredient already exists"},
+    422: {"model": ErrorResponse, "description": "Invalid Ingredient input format"},
+    500: {"model": ErrorResponse, "description": "Internal server error"},
+}
 
 
 @router.get("/", response_model=list[GetIngredientSchema])
@@ -26,7 +34,9 @@ async def get_ingredient(
     return ingredient
 
 
-@router.post("/", response_model=GetIngredientSchema, status_code=201)
+@router.post(
+    "/", response_model=GetIngredientSchema, status_code=201, responses=error_responses
+)
 async def create_ingredient(
     ingredient: CreateIngredientSchema,
     ingredient_repository: IngredientRepository = Depends(get_ingredient_repository),
@@ -34,7 +44,9 @@ async def create_ingredient(
     return ingredient_repository.create_ingredient(ingredient)
 
 
-@router.put("/{ingredient_id}", response_model=GetIngredientSchema)
+@router.put(
+    "/{ingredient_id}", response_model=GetIngredientSchema, responses=error_responses
+)
 async def update_ingredient(
     ingredient_id: int,
     ingredient: UpdateIngredientSchema,
