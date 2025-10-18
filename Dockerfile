@@ -8,6 +8,7 @@ RUN apt-get update \
 ENV PATH="/root/.local/bin:${PATH}"
 
 ENV VIRTUAL_ENV=/opt/venv
+ENV UV_PROJECT_ENVIRONMENT="$VIRTUAL_ENV"
 ENV PATH="$VIRTUAL_ENV/bin:${PATH}"
 
 WORKDIR /app
