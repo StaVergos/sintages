@@ -10,22 +10,28 @@ from src.core.schemas import ErrorResponse
 
 router = APIRouter()
 
-error_responses = {
-    404: {"model": ErrorResponse, "description": "Category not found"},
-    409: {"model": ErrorResponse, "description": "Category already exists"},
-    422: {"model": ErrorResponse, "description": "Invalid category input format"},
-    500: {"model": ErrorResponse, "description": "Internal server error"},
-}
 
-
-@router.get("/", response_model=list[GetCategorySchema])
+@router.get(
+    "/",
+    response_model=list[GetCategorySchema],
+    responses={
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
+)
 async def get_categories(
     category_repository: CategoryRepository = Depends(get_category_repository),
 ) -> list[GetCategorySchema]:
     return category_repository.get_all_categories()
 
 
-@router.get("/{category_id}", response_model=GetCategorySchema)
+@router.get(
+    "/{category_id}",
+    response_model=GetCategorySchema,
+    responses={
+        404: {"model": ErrorResponse, "description": "Category not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
+)
 async def get_category(
     category_id: int,
     category_repository: CategoryRepository = Depends(get_category_repository),
@@ -38,7 +44,14 @@ async def get_category(
     "/",
     response_model=GetCategorySchema,
     status_code=201,
-    responses=error_responses,
+    responses={
+        409: {
+            "model": ErrorResponse,
+            "description": "Username or email already exists",
+        },
+        422: {"model": ErrorResponse, "description": "Invalid user input format"},
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
 )
 async def create_category(
     category: CreateCategorySchema,
@@ -50,7 +63,14 @@ async def create_category(
 @router.put(
     "/{category_id}",
     response_model=GetCategorySchema,
-    responses=error_responses,
+    responses={
+        409: {
+            "model": ErrorResponse,
+            "description": "Username or email already exists",
+        },
+        422: {"model": ErrorResponse, "description": "Invalid user input format"},
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
 )
 async def update_category(
     category_id: int,
