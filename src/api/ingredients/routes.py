@@ -10,22 +10,28 @@ from src.core.schemas import ErrorResponse
 
 router = APIRouter()
 
-error_responses = {
-    404: {"model": ErrorResponse, "description": "Ingredient not found"},
-    409: {"model": ErrorResponse, "description": "Ingredient already exists"},
-    422: {"model": ErrorResponse, "description": "Invalid Ingredient input format"},
-    500: {"model": ErrorResponse, "description": "Internal server error"},
-}
 
-
-@router.get("/", response_model=list[GetIngredientSchema])
+@router.get(
+    "/",
+    response_model=list[GetIngredientSchema],
+    responses={
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
+)
 async def get_ingredients(
     ingredient_repository: IngredientRepository = Depends(get_ingredient_repository),
 ) -> list[GetIngredientSchema]:
     return ingredient_repository.get_all_ingredients()
 
 
-@router.get("/{ingredient_id}", response_model=GetIngredientSchema)
+@router.get(
+    "/{ingredient_id}",
+    response_model=GetIngredientSchema,
+    responses={
+        404: {"model": ErrorResponse, "description": "Ingredient not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
+)
 async def get_ingredient(
     ingredient_id: int,
     ingredient_repository: IngredientRepository = Depends(get_ingredient_repository),
@@ -35,7 +41,14 @@ async def get_ingredient(
 
 
 @router.post(
-    "/", response_model=GetIngredientSchema, status_code=201, responses=error_responses
+    "/",
+    response_model=GetIngredientSchema,
+    status_code=201,
+    responses={
+        409: {"model": ErrorResponse, "description": "Ingredient already exists"},
+        422: {"model": ErrorResponse, "description": "Invalid Ingredient input format"},
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
 )
 async def create_ingredient(
     ingredient: CreateIngredientSchema,
@@ -45,7 +58,13 @@ async def create_ingredient(
 
 
 @router.put(
-    "/{ingredient_id}", response_model=GetIngredientSchema, responses=error_responses
+    "/{ingredient_id}",
+    response_model=GetIngredientSchema,
+    responses={
+        409: {"model": ErrorResponse, "description": "Ingredient already exists"},
+        422: {"model": ErrorResponse, "description": "Invalid Ingredient input format"},
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
 )
 async def update_ingredient(
     ingredient_id: int,
