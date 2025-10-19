@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from src.api.categories.schemas import (
     CreateCategorySchema,
     GetCategorySchema,
@@ -6,29 +6,53 @@ from src.api.categories.schemas import (
 )
 from src.api.categories.services import CategoryRepository
 from src.api.categories.dependencies import get_category_repository
+from src.core.schemas import ErrorResponse
 
 router = APIRouter()
 
 
-@router.get("/", response_model=list[GetCategorySchema])
+@router.get(
+    "/",
+    response_model=list[GetCategorySchema],
+    responses={
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
+)
 async def get_categories(
     category_repository: CategoryRepository = Depends(get_category_repository),
 ) -> list[GetCategorySchema]:
     return category_repository.get_all_categories()
 
 
-@router.get("/{category_id}", response_model=GetCategorySchema)
+@router.get(
+    "/{category_id}",
+    response_model=GetCategorySchema,
+    responses={
+        404: {"model": ErrorResponse, "description": "Category not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
+)
 async def get_category(
     category_id: int,
     category_repository: CategoryRepository = Depends(get_category_repository),
 ):
     category = category_repository.get_category_by_id(category_id)
-    if category is None:
-        raise HTTPException(status_code=404, detail="Category not found")
     return category
 
 
-@router.post("/", response_model=GetCategorySchema)
+@router.post(
+    "/",
+    response_model=GetCategorySchema,
+    status_code=201,
+    responses={
+        409: {
+            "model": ErrorResponse,
+            "description": "Username or email already exists",
+        },
+        422: {"model": ErrorResponse, "description": "Invalid user input format"},
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
+)
 async def create_category(
     category: CreateCategorySchema,
     category_repository: CategoryRepository = Depends(get_category_repository),
@@ -36,7 +60,18 @@ async def create_category(
     return category_repository.create_category(category)
 
 
-@router.put("/{category_id}", response_model=GetCategorySchema)
+@router.put(
+    "/{category_id}",
+    response_model=GetCategorySchema,
+    responses={
+        409: {
+            "model": ErrorResponse,
+            "description": "Username or email already exists",
+        },
+        422: {"model": ErrorResponse, "description": "Invalid user input format"},
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
+)
 async def update_category(
     category_id: int,
     category: UpdateCategorySchema,
