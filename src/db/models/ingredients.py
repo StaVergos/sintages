@@ -3,6 +3,7 @@ from src.db.base import Base, TimestampMixin
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.db.models.categories import Category
+from src.db.models.recipes import Recipe
 
 
 class Ingredient(Base, TimestampMixin):
@@ -17,6 +18,10 @@ class Ingredient(Base, TimestampMixin):
         ForeignKey("categories.id"), nullable=True
     )
     category: Mapped["Category"] = relationship(back_populates="ingredients")
+    recipe_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("recipes.id"), nullable=True
+    )
+    recipe: Mapped["Recipe"] = relationship(back_populates="ingredients")
 
     @property
     def name(self) -> str:
