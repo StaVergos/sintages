@@ -6,22 +6,28 @@ from src.core.schemas import ErrorResponse
 
 router = APIRouter()
 
-error_responses = {
-    404: {"model": ErrorResponse, "description": "User not found"},
-    409: {"model": ErrorResponse, "description": "User already exists"},
-    422: {"model": ErrorResponse, "description": "Invalid user input format"},
-    500: {"model": ErrorResponse, "description": "Internal server error"},
-}
 
-
-@router.get("/", response_model=list[GetUserSchema])
+@router.get(
+    "/",
+    response_model=list[GetUserSchema],
+    responses={
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
+)
 async def get_users(
     user_repository: UserRepository = Depends(get_user_repository),
 ) -> list[GetUserSchema]:
     return user_repository.get_all_users()
 
 
-@router.get("/{user_id}", response_model=GetUserSchema)
+@router.get(
+    "/{user_id}",
+    response_model=GetUserSchema,
+    responses={
+        404: {"model": ErrorResponse, "description": "User not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
+)
 async def get_user(
     user_id: int, user_repository: UserRepository = Depends(get_user_repository)
 ):
@@ -33,7 +39,14 @@ async def get_user(
     "/",
     response_model=GetUserSchema,
     status_code=201,
-    responses=error_responses,
+    responses={
+        409: {
+            "model": ErrorResponse,
+            "description": "Username or email already exists",
+        },
+        422: {"model": ErrorResponse, "description": "Invalid user input format"},
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
 )
 async def create_user(
     user: CreateUserSchema,
@@ -45,7 +58,14 @@ async def create_user(
 @router.put(
     "/{user_id}",
     response_model=GetUserSchema,
-    responses=error_responses,
+    responses={
+        409: {
+            "model": ErrorResponse,
+            "description": "Username or email already exists",
+        },
+        422: {"model": ErrorResponse, "description": "Invalid user input format"},
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
 )
 async def update_user(
     user_id: int,
