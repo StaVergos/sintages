@@ -1,18 +1,21 @@
 from datetime import datetime
 from pydantic import Field, field_validator, field_serializer
-from typing import Literal
+from src.core.enums import DifficultyLevel
 from src.api.schemas import BaseSchema
 
 
 class RecipeSchema(BaseSchema):
     name: str = Field(max_length=183, examples=["Tzatziki"])
-    cooking_time: int = Field(..., examples=[30])
-    difficulty_level: Literal["Easy", "Medium", "Hard"] = Field(..., examples=["Easy"])
-    portions: int = Field(..., examples=[4])
+    cooking_time: int = Field(..., examples=[30], nullable=False)
+    difficulty_level: DifficultyLevel = Field(
+        ..., examples=["Easy", "Medium", "Hard"], nullable=False
+    )
+    portions: int = Field(..., examples=[4], nullable=False)
     is_vegan: bool = Field(..., examples=[False])
     instructions: list[str] = Field(..., examples=["Mix all ingredients."])
-    ingredient_ids: list[int] | None = Field(..., examples=[[1, 2, 3]])
-    user_id: int | None = Field(examples=[1], default=None)
+    ingredients: list[str] = Field(..., examples=["Cucumber", "Egg"], nullable=False)
+    quantity: list[str] = Field(..., examples=["200 grams", "1"], nullable=False)
+    user_id: int = Field(..., examples=[1], nullable=False)
 
     @field_validator("name")
     @classmethod
