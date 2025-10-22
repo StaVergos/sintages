@@ -62,7 +62,8 @@ class RecipeRepository:
                 portions=recipe_data.portions,
                 is_vegan=recipe_data.is_vegan,
                 instructions=recipe_data.instructions,
-                ingredients_ids=recipe_data.ingredient_ids,
+                ingredients=recipe_data.ingredients,
+                quantity=recipe_data.quantity,
                 user_id=recipe_data.user_id,
             )
             return self.add_recipe(new_recipe)
