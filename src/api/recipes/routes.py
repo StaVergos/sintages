@@ -76,6 +76,7 @@ async def create_recipe(
 @router.delete(
     "/{recipe_id}",
     response_model=DeleteRecipeSchema,
+    status_code=204,
     responses={
         404: {"model": ErrorResponse, "description": "Recipe not found"},
         500: {"model": ErrorResponse, "description": "Internal server error"},
