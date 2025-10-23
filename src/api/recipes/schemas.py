@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import Field, field_validator, field_serializer
-from src.core.enums import DifficultyLevel
+from src.api.recipes.enums import DifficultyLevel
 from src.api.schemas import BaseSchema
 
 
