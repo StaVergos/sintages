@@ -1,9 +1,10 @@
 from typing import List, TYPE_CHECKING
 from src.db.base import Base, TimestampMixin
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import String, ForeignKey, Enum as sqlenum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.associationproxy import association_proxy
 from src.db.models.users import User
+from src.api.recipes.enums import DifficultyLevel
 
 if TYPE_CHECKING:
     from src.db.models.ingredients import Ingredient
@@ -17,8 +18,8 @@ class Recipe(Base, TimestampMixin):
         String(183), unique=True, nullable=False, name="name"
     )
     cooking_time: Mapped[int] = mapped_column(nullable=False)
-    difficulty_level: Mapped[str] = mapped_column(
-        nullable=False,
+    difficulty_level: Mapped[DifficultyLevel] = mapped_column(
+        sqlenum(DifficultyLevel), nullable=False
     )
     portions: Mapped[int] = mapped_column(nullable=False)
     is_vegan: Mapped[bool] = mapped_column(nullable=False, default=False)
