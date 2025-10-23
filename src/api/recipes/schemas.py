@@ -12,7 +12,7 @@ class RecipeSchema(BaseSchema):
     )
     portions: int = Field(..., examples=[4], nullable=False)
     is_vegan: bool = Field(..., examples=[False])
-    instructions: list[str] = Field(..., examples=["Mix all ingredients."])
+    instructions: str = Field(..., examples=["Mix all ingredients."])
     ingredients: list[str] = Field(..., examples=["Cucumber", "Egg"], nullable=False)
     quantity: list[str] = Field(..., examples=["200 grams", "1"], nullable=False)
     user_id: int = Field(..., examples=[1], nullable=False)
