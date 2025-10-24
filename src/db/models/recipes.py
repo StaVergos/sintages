@@ -24,9 +24,17 @@ class Recipe(Base, TimestampMixin):
     portions: Mapped[int] = mapped_column(nullable=False)
     is_vegan: Mapped[bool] = mapped_column(nullable=False, default=False)
     instructions: Mapped[str] = mapped_column(nullable=False)
-    recipe_ingredients = relationship("RecipeIngredient", back_populates="recipe")
+    recipe_ingredients = relationship(
+        "RecipeIngredient",
+        back_populates="recipe",
+        cascade="all, delete-orphan",
+        overlaps="ingredients",
+    )
     ingredients: Mapped[List["Ingredient"]] = relationship(
-        "Ingredient", secondary="recipe_ingredients", back_populates="recipe"
+        "Ingredient",
+        secondary="recipe_ingredients",
+        back_populates="recipes",
+        overlaps="recipe_ingredients",
     )
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     user: Mapped["User"] = relationship(back_populates="recipes")
@@ -42,6 +50,17 @@ class Recipe(Base, TimestampMixin):
     def name(self, value: str) -> None:
         self._name = value.lower()
 
+    @property
+    def ingredient_ids(self) -> List[int]:
+        return [ingredient.id for ingredient in self.ingredients]
+
+    @property
+    def recipe_ingredients_payload(self) -> List[dict]:
+        return [
+            {"ingredient_id": assoc.ingredient_id, "quantity": assoc.quantity}
+            for assoc in self.recipe_ingredients
+        ]
+
 
 class RecipeIngredient(Base):
     __tablename__ = "recipe_ingredients"
@@ -50,5 +69,11 @@ class RecipeIngredient(Base):
         ForeignKey("ingredients.id"), primary_key=True
     )
     quantity: Mapped[str] = mapped_column(nullable=False)
-    recipe: Mapped["Recipe"] = relationship(back_populates="recipe_ingredients")
-    ingredient: Mapped["Ingredient"] = relationship(back_populates="recipe_ingredients")
+    recipe: Mapped["Recipe"] = relationship(
+        back_populates="recipe_ingredients", overlaps="ingredients,recipes"
+    )
+    ingredient: Mapped["Ingredient"] = relationship(
+        back_populates="recipe_ingredients", overlaps="ingredients,recipes"
+    )
+
+    __mapper_args__ = {"confirm_deleted_rows": False}
