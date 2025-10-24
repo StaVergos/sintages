@@ -20,6 +20,7 @@ def test_create_recipe(client: TestClient, user, ingredient_factory):
     ]
     assert data["ingredients"] == expected_ingredients
     assert data["user_id"] == user.id
+    assert data["is_vegan"] is False
 
 
 @pytest.mark.anyio
@@ -30,6 +31,7 @@ def test_get_recipe(client: TestClient, recipe: Recipe):
     assert data["id"] == recipe.id
     assert data["user_id"] == recipe.user_id
     assert data["ingredients"] == recipe.recipe_ingredients_payload
+    assert data["is_vegan"] == recipe.is_vegan
 
 
 @pytest.mark.anyio
@@ -42,6 +44,7 @@ def test_list_recipes(client: TestClient, recipe_factory):
     data = resp.json()
     ids = {item["id"] for item in data}
     assert ids == {r1.id, r2.id}
+    assert all("is_vegan" in item for item in data)
 
 
 @pytest.mark.anyio
@@ -64,6 +67,7 @@ def test_delete_recipe(client: TestClient, recipe: Recipe):
     data = resp.json()
     assert data["id"] == recipe.id
     assert data["ingredients"] == recipe.recipe_ingredients_payload
+    assert data["is_vegan"] == recipe.is_vegan
 
     follow_up = client.get(f"/recipes/{recipe.id}")
     assert follow_up.status_code == 404

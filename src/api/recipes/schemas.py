@@ -14,7 +14,6 @@ class RecipeBaseSchema(BaseSchema):
     cooking_time: int = Field(..., examples=[30], ge=1)
     difficulty_level: DifficultyLevel = Field(..., examples=["EASY", "MEDIUM", "HARD"])
     portions: int = Field(..., examples=[4], ge=1)
-    is_vegan: bool = Field(..., examples=[False])
     instructions: str = Field(..., examples=["Mix all ingredients."])
     user_id: int = Field(..., examples=[1])
 
@@ -36,6 +35,7 @@ class CreateRecipeSchema(RecipeBaseSchema):
 
 
 class GetRecipeSchema(RecipeBaseSchema):
+    is_vegan: bool = Field(..., examples=[False])
     id: int = Field(..., examples=[1])
     created_at: datetime = Field(..., examples=["2023-10-01T12:00:00Z"])
     ingredients: list[RecipeIngredientPayload] = Field(

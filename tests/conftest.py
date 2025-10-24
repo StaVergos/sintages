@@ -173,7 +173,6 @@ def recipe(db: Session, user, ingredient_factory):
         cooking_time=30,
         difficulty_level=DifficultyLevel.EASY,
         portions=2,
-        is_vegan=False,
         instructions="Mix everything",
         user=user,
         user_id=user.id,
@@ -207,7 +206,6 @@ def recipe_factory(db: Session, user_factory, ingredient_factory):
                 "difficulty_level", DifficultyLevel.EASY
             ),
             "portions": overrides.pop("portions", 4),
-            "is_vegan": overrides.pop("is_vegan", False),
             "instructions": overrides.pop("instructions", "Mix well"),
             "user": user,
             "user_id": user.id,

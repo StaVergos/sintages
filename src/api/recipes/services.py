@@ -100,7 +100,6 @@ class RecipeRepository:
                 cooking_time=recipe_data.cooking_time,
                 difficulty_level=recipe_data.difficulty_level,
                 portions=recipe_data.portions,
-                is_vegan=recipe_data.is_vegan,
                 instructions=recipe_data.instructions,
                 user_id=recipe_data.user_id,
                 user=user,
