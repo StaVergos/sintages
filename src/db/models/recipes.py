@@ -22,7 +22,6 @@ class Recipe(Base, TimestampMixin):
         sqlenum(DifficultyLevel), nullable=False
     )
     portions: Mapped[int] = mapped_column(nullable=False)
-    is_vegan: Mapped[bool] = mapped_column(nullable=False, default=False)
     instructions: Mapped[str] = mapped_column(nullable=False)
     recipe_ingredients = relationship(
         "RecipeIngredient",
@@ -60,6 +59,10 @@ class Recipe(Base, TimestampMixin):
             {"ingredient_id": assoc.ingredient_id, "quantity": assoc.quantity}
             for assoc in self.recipe_ingredients
         ]
+
+    @property
+    def is_vegan(self) -> bool:
+        return all(ingredient.is_vegan for ingredient in self.ingredients)
 
 
 class RecipeIngredient(Base):

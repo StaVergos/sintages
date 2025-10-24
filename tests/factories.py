@@ -54,7 +54,6 @@ def make_recipe_payload(
         "cooking_time": fake.random_int(min=5, max=120),
         "difficulty_level": DifficultyLevel.EASY,
         "portions": fake.random_int(min=1, max=8),
-        "is_vegan": False,
         "instructions": fake.sentence(),
         "ingredients": ingredient_payloads,
         "user_id": user_id,
