@@ -41,8 +41,8 @@ async def get_recipe(
 
 
 @router.get(
-    "/{user_id}",
-    response_model=GetRecipeSchema,
+    "/user/{user_id}",
+    response_model=list[GetRecipeSchema],
     responses={
         404: {"model": ErrorResponse, "description": "Recipe not found"},
         500: {"model": ErrorResponse, "description": "Internal server error"},
@@ -51,9 +51,8 @@ async def get_recipe(
 async def get_recipes_user(
     user_id: int,
     recipe_repository: RecipeRepository = Depends(get_recipe_repository),
-):
-    recipe = recipe_repository.get_recipe_by_user(user_id)
-    return recipe
+) -> list[GetRecipeSchema]:
+    return recipe_repository.get_recipes_by_user(user_id)
 
 
 @router.post(
