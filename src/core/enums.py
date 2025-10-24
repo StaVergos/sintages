@@ -5,3 +5,4 @@ class ErrorKind(StrEnum):
     NOT_FOUND = "NotFoundError"
     INTERNAL = "InternalError"
     CONFLICT = "ConflictError"
+    VALIDATION = "ValidationError"
