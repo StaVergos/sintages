@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status
 from src.db.models.ingredients import Ingredient
+from src.db.models.categories import Category
 from src.api.ingredients.schemas import (
     GetIngredientSchema,
     CreateIngredientSchema,
@@ -43,6 +44,23 @@ class IngredientRepository:
         self.db.refresh(ingredient)
         return GetIngredientSchema.model_validate(ingredient)
 
+    def get_categories(self, category_ids: list[int]) -> list[Category]:
+        if not category_ids:
+            return []
+        categories = (
+            self.db.query(Category).filter(Category.id.in_(set(category_ids))).all()
+        )
+        found_ids = {cat.id for cat in categories}
+        missing_ids = set(category_ids) - found_ids
+        if missing_ids:
+            raise ErrorException(
+                code=status.HTTP_404_NOT_FOUND,
+                message=f"Categories not found: {sorted(missing_ids)}",
+                kind=ErrorKind.NOT_FOUND,
+                source=f"{self.repo_name}.get_categories",
+            )
+        return categories
+
     def create_ingredient(
         self, ingredient_data: CreateIngredientSchema
     ) -> GetIngredientSchema:
@@ -50,7 +68,7 @@ class IngredientRepository:
             new_ingredient = Ingredient(
                 name=ingredient_data.name,
                 is_vegan=ingredient_data.is_vegan,
-                category_id=ingredient_data.category_id,
+                categories=self.get_categories(ingredient_data.category_ids),
             )
             return self.add_ingredient(new_ingredient)
         except IntegrityError:
@@ -77,9 +95,14 @@ class IngredientRepository:
         if not ingredient:
             raise HTTPException(status_code=404, detail="Ingredient not found")
         try:
-            ingredient.name = ingredient_data.name
-            ingredient.is_vegan = ingredient_data.is_vegan
-            ingredient.category_id = ingredient_data.category_id
+            if ingredient_data.name is not None:
+                ingredient.name = ingredient_data.name
+            if ingredient_data.is_vegan is not None:
+                ingredient.is_vegan = ingredient_data.is_vegan
+            if ingredient_data.category_ids is not None:
+                ingredient.categories = self.get_categories(
+                    ingredient_data.category_ids
+                )
             self.db.commit()
             self.db.refresh(ingredient)
             return GetIngredientSchema.model_validate(ingredient)
