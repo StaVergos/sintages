@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Generator
+from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
@@ -157,6 +158,69 @@ def ingredient_factory(db):
         db.add(row)
         db.flush()
         return row
+
+    return _create
+
+
+@pytest.fixture()
+def recipe(db: Session, user, ingredient_factory):
+    from src.db.models.recipes import Recipe, RecipeIngredient
+    from src.api.recipes.enums import DifficultyLevel
+
+    ingredients = [ingredient_factory(), ingredient_factory()]
+    recipe = Recipe(
+        name=f"recipe-{uuid4().hex[:6]}",
+        cooking_time=30,
+        difficulty_level=DifficultyLevel.EASY,
+        portions=2,
+        is_vegan=False,
+        instructions="Mix everything",
+        user=user,
+        user_id=user.id,
+    )
+    recipe.recipe_ingredients = [
+        RecipeIngredient(ingredient=ingredient, quantity=qty)
+        for ingredient, qty in zip(ingredients, ["200 g", "1 cup"], strict=True)
+    ]
+    db.add(recipe)
+    db.flush()
+    return recipe
+
+
+@pytest.fixture()
+def recipe_factory(db: Session, user_factory, ingredient_factory):
+    from src.db.models.recipes import Recipe, RecipeIngredient
+    from src.api.recipes.enums import DifficultyLevel
+
+    def _create(**overrides):
+        user = overrides.pop("user", user_factory())
+        ingredients = overrides.pop(
+            "ingredients", [ingredient_factory(), ingredient_factory()]
+        )
+        quantities = overrides.pop(
+            "quantities", ["1 unit" for _ in range(len(ingredients))]
+        )
+        data = {
+            "name": overrides.pop("name", f"recipe-{uuid4().hex[:6]}"),
+            "cooking_time": overrides.pop("cooking_time", 25),
+            "difficulty_level": overrides.pop(
+                "difficulty_level", DifficultyLevel.EASY
+            ),
+            "portions": overrides.pop("portions", 4),
+            "is_vegan": overrides.pop("is_vegan", False),
+            "instructions": overrides.pop("instructions", "Mix well"),
+            "user": user,
+            "user_id": user.id,
+        }
+        data.update(overrides)
+        recipe = Recipe(**data)
+        recipe.recipe_ingredients = [
+            RecipeIngredient(ingredient=ingredient, quantity=qty)
+            for ingredient, qty in zip(ingredients, quantities, strict=True)
+        ]
+        db.add(recipe)
+        db.flush()
+        return recipe
 
     return _create
 

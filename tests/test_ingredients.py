@@ -12,6 +12,7 @@ def test_create_ingredient(client: TestClient):
     data = resp.json()
     assert data["name"] == payload.name.capitalize()
     assert "id" in data
+    assert data["category_ids"] == payload.category_ids
 
 
 @pytest.mark.anyio
@@ -21,7 +22,7 @@ def test_get_ingredient(client: TestClient, ingredient: Ingredient):
     data = resp.json()
     assert data["id"] == ingredient.id
     assert data["name"] == ingredient.name.capitalize()
-    assert data["category_id"] == ingredient.category_id
+    assert data["category_ids"] == ingredient.category_ids
 
 
 @pytest.mark.anyio
@@ -44,4 +45,4 @@ def test_update_ingredient(client: TestClient, ingredient: Ingredient):
     assert data["id"] == ingredient.id
     assert data["name"] == new_payload.name.capitalize()
     assert data["is_vegan"] == new_payload.is_vegan
-    assert data["category_id"] == new_payload.category_id
+    assert data["category_ids"] == new_payload.category_ids
