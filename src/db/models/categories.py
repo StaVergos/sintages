@@ -13,7 +13,11 @@ class Category(Base, TimestampMixin):
     _name: Mapped[str] = mapped_column(
         String(100), unique=True, nullable=False, name="name"
     )
-    ingredients: Mapped[List["Ingredient"]] = relationship(back_populates="category")
+    ingredients: Mapped[List["Ingredient"]] = relationship(
+        "Ingredient",
+        secondary="ingredient_category",
+        back_populates="categories",
+    )
 
     @property
     def name(self) -> str:
