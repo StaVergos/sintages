@@ -69,7 +69,9 @@ class RecipeRepository:
             .all()
         )
         ingredient_map = {ingredient.id: ingredient for ingredient in ingredients}
-        missing_ids = [ing_id for ing_id in ingredient_ids if ing_id not in ingredient_map]
+        missing_ids = [
+            ing_id for ing_id in ingredient_ids if ing_id not in ingredient_map
+        ]
         if missing_ids:
             raise ErrorException(
                 code=status.HTTP_404_NOT_FOUND,
