@@ -1,7 +1,10 @@
+from typing import TYPE_CHECKING
 from datetime import datetime
 from pydantic import Field, field_validator, field_serializer
-from src.api.categories.schemas import CategoryRelationshipSchema
 from src.api.schemas import BaseSchema
+
+if TYPE_CHECKING:
+    from src.api.categories.schemas import CategoryRelationshipSchema
 
 
 class IngredientSchema(BaseSchema):
@@ -39,3 +42,8 @@ class UpdateIngredientSchema(IngredientSchema):
         default_factory=list,
         examples=[[{"id": 1, "name": "Veggies", "created_at": "2023-10-01T12:00:00Z"}]],
     )
+
+
+class IngredientRelationshipSchema(BaseSchema):
+    id: int = Field(..., examples=[1])
+    name: str = Field(max_length=50, examples="Broccoli")
