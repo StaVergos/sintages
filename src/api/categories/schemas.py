@@ -24,12 +24,18 @@ class GetCategorySchema(CategorySchema):
     id: int = Field(..., examples=[1])
     created_at: datetime = Field(..., examples=["2023-10-01T12:00:00Z"])
     updated_at: datetime | None = Field(..., examples=["2023-10-01T12:00:00Z"])
-    ingredients: list["IngredientRelationshipSchema"] = Field(
-        default_factory=list,
-        examples=[
-            [{"id": 1, "name": "Broccoli", "created_at": "2023-10-01T12:00:00Z"}]
-        ],
-    )
+    # ingredients: list["IngredientRelationshipSchema"] = Field(
+    #     default_factory=list,
+    #     examples=[
+    #         [{"id": 1, "name": "Broccoli", "created_at": "2023-10-01T12:00:00Z"}]
+    #     ],
+    # )
+
+    @property
+    def ingredients(self) -> list["IngredientRelationshipSchema"]:
+        from src.api.ingredients.schemas import IngredientRelationshipSchema
+
+        return list[IngredientRelationshipSchema]
 
 
 class CreateCategorySchema(CategorySchema):
