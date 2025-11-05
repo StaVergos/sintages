@@ -1,12 +1,14 @@
-from fastapi import HTTPException, status
-from src.db.models.categories import Category
-from src.api.categories.schemas import (
-    GetCategorySchema,
-    CreateCategorySchema,
-    UpdateCategorySchema,
-)
+from fastapi import status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from src.api.categories.schemas import (
+    CreateCategorySchema,
+    GetCategorySchema,
+    UpdateCategorySchema,
+)
+from src.api.ingredients.schemas import IngredientRelationshipSchema
+from src.db.models.ingredients import Ingredient
+from src.db.models.categories import Category
 from src.core.exceptions import ErrorException
 from src.core.enums import ErrorKind
 
@@ -21,7 +23,17 @@ class CategoryRepository:
 
     def get_all_categories(self) -> list[GetCategorySchema]:
         categories = self.db.query(Category).all()
-        return [GetCategorySchema.model_validate(cat) for cat in categories]
+        return [GetCategorySchema.model_validate(category) for category in categories]
+
+    def get_ingredients(
+        self, ingredients: list[IngredientRelationshipSchema]
+    ) -> list[Ingredient]:
+        if not ingredients:
+            return []
+        ingredients_ids = [ing.id for ing in ingredients]
+        ingredients = (
+            self.db.query(Ingredient).filter(Ingredient.id.in_(ingredients_ids)).all()
+        )
 
     def get_category_by_id(self, category_id: int) -> GetCategorySchema | None:
         category = self.db.query(Category).filter(Category.id == category_id).first()
@@ -54,22 +66,28 @@ class CategoryRepository:
                 kind=ErrorKind.CONFLICT,
                 source=f"{self.repo_name}.create_category",
             )
-        except Exception:
-            raise ErrorException(
-                code=status.HTTP_500_ENTERNAL_SERVER_ERROR,
-                message="Internal server error",
-                kind=ErrorKind.INTERNAL,
-                source=f"{self.repo_name}.create_category",
-            )
+        # except Exception as e:
+        #     raise ErrorException(
+        #         code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        #         message=f"Internal server error: {str(e)}",
+        #         kind=ErrorKind.INTERNAL,
+        #         source=f"{self.repo_name}.create_category",
+        #     )
 
     def update_category(
         self, category_id: int, category_data: UpdateCategorySchema
     ) -> GetCategorySchema:
         category = self.db.query(Category).filter(Category.id == category_id).first()
         if not category:
-            raise HTTPException(status_code=404, detail="Category not found")
+            raise ErrorException(
+                code=status.HTTP_404_NOT_FOUND,
+                message="Category not found",
+                kind=ErrorKind.NOT_FOUND,
+                source=f"{self.repo_name}.update_category",
+            )
         try:
-            category.name = category_data.name
+            if category_data.name is not None:
+                category.name = category_data.name
             self.db.commit()
             self.db.refresh(category)
             return GetCategorySchema.model_validate(category)
