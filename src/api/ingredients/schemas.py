@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 class IngredientSchema(BaseSchema):
     name: str = Field(max_length=50, examples=["Broccoli"])
     is_vegan: bool = Field(..., examples=[True])
-    categories: list[CategoryRelationshipSchema] = Field(
+    categories: list["CategoryRelationshipSchema"] = Field(
         default_factory=list,
         examples=[[{"id": 1, "name": "Veggies", "created_at": "2023-10-01T12:00:00Z"}]],
     )
@@ -38,7 +38,7 @@ class CreateIngredientSchema(IngredientSchema):
 class UpdateIngredientSchema(IngredientSchema):
     name: str | None = Field(examples=["Broccoli"], default=None)
     is_vegan: bool | None = Field(examples=[True], default=None)
-    categories: list[CategoryRelationshipSchema] = Field(
+    categories: list["CategoryRelationshipSchema"] = Field(
         default_factory=list,
         examples=[[{"id": 1, "name": "Veggies", "created_at": "2023-10-01T12:00:00Z"}]],
     )
