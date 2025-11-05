@@ -27,3 +27,7 @@ class Category(Base, TimestampMixin):
     @name.setter
     def name(self, value: str) -> None:
         self._name = value.lower()
+
+    @property
+    def ingredient_ids(self) -> List[int]:
+        return [ingredient.id for ingredient in self.ingredients]
