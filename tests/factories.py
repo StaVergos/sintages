@@ -1,7 +1,7 @@
 from faker import Faker
 from src.api.users.schemas import CreateUserSchema
-from src.api.ingredients.schemas import CreateIngredientSchema
-from src.api.categories.schemas import CreateCategorySchema
+from src.api.common.schemas import CreateIngredientSchema
+from src.api.common.schemas import CreateCategorySchema
 from src.api.recipes.schemas import CreateRecipeSchema
 from src.api.recipes.enums import DifficultyLevel
 
