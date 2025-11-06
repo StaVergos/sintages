@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from src.db.models.ingredients import Ingredient
 from src.db.models.categories import Category
-from src.api.common.schemas import (
+from src.api.ingredients.schemas import (
     GetIngredientSchema,
     CreateIngredientSchema,
     UpdateIngredientSchema,

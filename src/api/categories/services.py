@@ -1,7 +1,7 @@
 from fastapi import status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from src.api.common.schemas import (
+from src.api.categories.schemas import (
     CreateCategorySchema,
     GetCategorySchema,
     UpdateCategorySchema,
