@@ -132,32 +132,46 @@ def user_factory(db):
 
 
 @pytest.fixture()
-def ingredient(db: Session):
+def ingredient(db: Session, category_factory):
     from src.db.models.ingredients import Ingredient
     from tests.factories import make_ingredient_payload
 
-    payload = make_ingredient_payload()
-
-    row = Ingredient(name=payload.name, is_vegan=payload.is_vegan)
-    db.add(row)
+    categories = [category_factory(), category_factory()]
+    categories_ids = [cat.id for cat in categories]
+    categories_names = [cat.name for cat in categories]
+    payload = make_ingredient_payload(
+        categories_ids=categories_ids, categories_names=categories_names
+    )
+    ingredient = Ingredient(name=payload.name, is_vegan=payload.is_vegan)
+    categories = [category_factory(), category_factory()]
+    ingredient.categories = categories
+    db.add(ingredient)
     db.flush()
-    return row
+    return ingredient
 
 
 @pytest.fixture()
-def ingredient_factory(db):
+def ingredient_factory(db, category_factory):
     from src.db.models.ingredients import Ingredient
     from tests.factories import make_ingredient_payload
 
     def _create(**overrides):
-        payload = make_ingredient_payload(**overrides)
-        row = Ingredient(
-            name=payload.name,
-            is_vegan=payload.is_vegan,
+        categories = [category_factory() for _ in range(2)]
+        categories_ids = [cat.id for cat in categories]
+        categories_names = [cat.name for cat in categories]
+
+        payload = make_ingredient_payload(
+            categories_ids=categories_ids,
+            categories_names=categories_names,
+            **overrides,
         )
-        db.add(row)
+
+        ingredient = Ingredient(
+            name=payload.name, is_vegan=payload.is_vegan, categories=categories
+        )
+        db.add(ingredient)
         db.flush()
-        return row
+        return ingredient
 
     return _create
 
@@ -202,9 +216,7 @@ def recipe_factory(db: Session, user_factory, ingredient_factory):
         data = {
             "name": overrides.pop("name", f"recipe-{uuid4().hex[:6]}"),
             "cooking_time": overrides.pop("cooking_time", 25),
-            "difficulty_level": overrides.pop(
-                "difficulty_level", DifficultyLevel.EASY
-            ),
+            "difficulty_level": overrides.pop("difficulty_level", DifficultyLevel.EASY),
             "portions": overrides.pop("portions", 4),
             "instructions": overrides.pop("instructions", "Mix well"),
             "user": user,
