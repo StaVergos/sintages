@@ -1,12 +1,12 @@
 from fastapi import status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from src.api.categories.schemas import (
+from src.api.common.schemas import (
     CreateCategorySchema,
     GetCategorySchema,
     UpdateCategorySchema,
 )
-from src.api.ingredients.schemas import IngredientRelationshipSchema
+from src.api.common.schemas import IngredientRelationshipSchema
 from src.db.models.ingredients import Ingredient
 from src.db.models.categories import Category
 from src.core.exceptions import ErrorException
