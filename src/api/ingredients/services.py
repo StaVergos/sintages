@@ -3,12 +3,12 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from src.db.models.ingredients import Ingredient
 from src.db.models.categories import Category
-from src.api.ingredients.schemas import (
+from src.api.common.schemas import (
     GetIngredientSchema,
     CreateIngredientSchema,
     UpdateIngredientSchema,
 )
-from src.api.categories.schemas import CategoryRelationshipSchema
+from src.api.common.schemas import CategoryRelationshipSchema
 from src.core.exceptions import ErrorException
 from src.core.enums import ErrorKind
 
