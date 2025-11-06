@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from src.api.common.schemas import (
+from src.api.ingredients.schemas import (
     CreateIngredientSchema,
     GetIngredientSchema,
     UpdateIngredientSchema,

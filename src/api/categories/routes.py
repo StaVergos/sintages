@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from src.api.common.schemas import (
+from src.api.categories.schemas import (
     CreateCategorySchema,
     GetCategorySchema,
     UpdateCategorySchema,
