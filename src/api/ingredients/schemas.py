@@ -1,19 +1,16 @@
-from typing import TYPE_CHECKING
 from datetime import datetime
 from pydantic import Field, field_validator, field_serializer
 from src.api.schemas import BaseSchema
-
-if TYPE_CHECKING:
-    from src.api.categories.schemas import CategoryRelationshipSchema
+from src.api.categories.schemas import CategoryRelationshipSchema
 
 
 class IngredientSchema(BaseSchema):
     name: str = Field(max_length=50, examples=["Broccoli"])
     is_vegan: bool = Field(..., examples=[True])
-    # categories: list["CategoryRelationshipSchema"] = Field(
-    #     default_factory=list,
-    #     examples=[[{"id": 1, "name": "Veggies", "created_at": "2023-10-01T12:00:00Z"}]],
-    # )
+    categories: list["CategoryRelationshipSchema"] = Field(
+        default_factory=list,
+        examples=[[{"id": 1, "name": "Veggies"}]],
+    )
 
     @field_validator("name")
     @classmethod
@@ -24,11 +21,11 @@ class IngredientSchema(BaseSchema):
     def serialize_name(self, value: str) -> str:
         return value.capitalize()
 
-    @property
-    def categories(self) -> list["CategoryRelationshipSchema"]:
-        from src.api.categories.schemas import CategoryRelationshipSchema
+    # @property
+    # def categories(self) -> list["CategoryRelationshipSchema"]:
+    #     from src.api.categories.schemas import CategoryRelationshipSchema
 
-        return list[CategoryRelationshipSchema]
+    #     return list[CategoryRelationshipSchema]
 
 
 class GetIngredientSchema(IngredientSchema):
@@ -44,10 +41,10 @@ class CreateIngredientSchema(IngredientSchema):
 class UpdateIngredientSchema(IngredientSchema):
     name: str | None = Field(examples=["Broccoli"], default=None)
     is_vegan: bool | None = Field(examples=[True], default=None)
-    # categories: list["CategoryRelationshipSchema"] = Field(
-    #     default_factory=list,
-    #     examples=[[{"id": 1, "name": "Veggies", "created_at": "2023-10-01T12:00:00Z"}]],
-    # )
+    categories: list["CategoryRelationshipSchema"] = Field(
+        default_factory=list,
+        examples=[[{"id": 1, "name": "Veggies"}]],
+    )
 
 
 class IngredientRelationshipSchema(BaseSchema):

@@ -54,6 +54,7 @@ class IngredientRepository:
         categories = (
             self.db.query(Category).filter(Category.id.in_(categories_ids)).all()
         )
+        return categories
         # exist_categories = {cat.id for cat in categories}
         # missing_ids = set(categories) - exist_categories
         # if missing_ids:
@@ -63,7 +64,6 @@ class IngredientRepository:
         #         kind=ErrorKind.NOT_FOUND,
         #         source=f"{self.repo_name}.get_categories",
         #     )
-        return categories
 
     def create_ingredient(
         self, ingredient_data: CreateIngredientSchema
