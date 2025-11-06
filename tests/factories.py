@@ -20,11 +20,26 @@ def make_user_payload() -> CreateUserSchema:
     )
 
 
-def make_ingredient_payload(**overrides) -> CreateIngredientSchema:
+def make_ingredient_payload(
+    *,
+    categories_ids: list[int] | None = None,
+    categories_names: list[str] | None = None,
+    **overrides,
+) -> CreateIngredientSchema:
+    if categories_ids is None:
+        categories_ids = [1, 2]
+    if categories_names is None:
+        categories_names = ["Veggies", "Fruits"]
+    category_payloads = [
+        {"id": category_id, "name": category_name}
+        for category_id, category_name in zip(
+            categories_ids, categories_names, strict=True
+        )
+    ]
     data = {
         "name": fake.unique.name(),
         "is_vegan": False,
-        "category_ids": [],
+        "categories": category_payloads,
     }
     data.update(overrides)
     return CreateIngredientSchema(**data)
