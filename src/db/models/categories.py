@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from src.db.base import Base, TimestampMixin
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -14,7 +14,7 @@ class Category(Base, TimestampMixin):
     _name: Mapped[str] = mapped_column(
         String(100), unique=True, nullable=False, name="name"
     )
-    ingredients: Mapped[List["Ingredient"]] = relationship(
+    ingredients: Mapped[list["Ingredient"]] = relationship(
         "Ingredient",
         secondary="ingredient_category",
         back_populates="categories",

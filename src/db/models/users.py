@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.db.base import Base, TimestampMixin
@@ -16,4 +16,4 @@ class User(Base, TimestampMixin):
     full_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
-    recipes: Mapped[List["Recipe"]] = relationship(back_populates="user")
+    recipes: Mapped[list["Recipe"]] = relationship(back_populates="user")

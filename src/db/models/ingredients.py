@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from src.db.base import Base, TimestampMixin
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -16,17 +16,17 @@ class Ingredient(Base, TimestampMixin):
         String(100), unique=True, nullable=False, name="name"
     )
     is_vegan: Mapped[bool] = mapped_column(nullable=False, default=False)
-    categories: Mapped[List["Category"]] = relationship(
+    categories: Mapped[list["Category"]] = relationship(
         "Category",
         secondary="ingredient_category",
         back_populates="ingredients",
     )
-    recipe_ingredients: Mapped[List["RecipeIngredient"]] = relationship(
+    recipe_ingredients: Mapped[list["RecipeIngredient"]] = relationship(
         "RecipeIngredient",
         back_populates="ingredient",
         cascade="all, delete-orphan",
     )
-    recipes: Mapped[List["Recipe"]] = relationship(
+    recipes: Mapped[list["Recipe"]] = relationship(
         "Recipe",
         secondary="recipe_ingredients",
         back_populates="ingredients",
@@ -42,7 +42,7 @@ class Ingredient(Base, TimestampMixin):
         self._name = value.lower()
 
     @property
-    def category_ids(self) -> List[int]:
+    def category_ids(self) -> list[int]:
         return [category.id for category in self.categories]
 
 

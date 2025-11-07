@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from src.db.base import Base, TimestampMixin
 from sqlalchemy import String, ForeignKey, Enum as sqlenum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -29,7 +29,7 @@ class Recipe(Base, TimestampMixin):
         cascade="all, delete-orphan",
         overlaps="ingredients",
     )
-    ingredients: Mapped[List["Ingredient"]] = relationship(
+    ingredients: Mapped[list["Ingredient"]] = relationship(
         "Ingredient",
         secondary="recipe_ingredients",
         back_populates="recipes",
@@ -50,11 +50,11 @@ class Recipe(Base, TimestampMixin):
         self._name = value.lower()
 
     @property
-    def ingredient_ids(self) -> List[int]:
+    def ingredient_ids(self) -> list[int]:
         return [ingredient.id for ingredient in self.ingredients]
 
     @property
-    def recipe_ingredients_payload(self) -> List[dict]:
+    def recipe_ingredients_payload(self) -> list[dict]:
         return [
             {"ingredient_id": assoc.ingredient_id, "quantity": assoc.quantity}
             for assoc in self.recipe_ingredients
