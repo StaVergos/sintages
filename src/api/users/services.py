@@ -1,5 +1,5 @@
 from fastapi import HTTPException, status
-from src.api.users.schemas import CreateUserSchema, GetUserSchema
+from src.api.users.schemas import CreateUserSchema, GetUserSchema, UpdateUserSchema
 from src.db.models.users import User
 from src.core.security import hash_password
 from sqlalchemy.exc import IntegrityError
@@ -76,15 +76,19 @@ class UserRepository:
                 source=f"{self.repo_name}.create_user",
             )
 
-    def update_user(self, user_id: int, user_data: CreateUserSchema) -> GetUserSchema:
+    def update_user(self, user_id: int, user_data: UpdateUserSchema) -> GetUserSchema:
         user = self.db.query(User).filter(User.id == user_id).first()
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         try:
-            user.username = user_data.username
-            user.email = user_data.email
-            user.full_name = user_data.full_name
-            user.is_active = user_data.is_active
+            if user_data.username is not None:
+                user.username = user_data.username
+            if user_data.email is not None:
+                user.email = user_data.email
+            if user_data.full_name is not None:
+                user.full_name = user_data.full_name
+            if user_data.is_active is not None:
+                user.is_active = user_data.is_active
             self.db.commit()
             self.db.refresh(user)
             return GetUserSchema.model_validate(user)

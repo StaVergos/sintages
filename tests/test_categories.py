@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 def test_create_category(client: TestClient):
     payload = make_category_payload()
     resp = client.post("/categories", json=payload.model_dump())
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     data = resp.json()
     assert data["name"] == payload.name.capitalize()
     assert "id" in data

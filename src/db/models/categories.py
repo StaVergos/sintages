@@ -1,10 +1,11 @@
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from src.db.base import Base, TimestampMixin
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
     from src.db.models.ingredients import Ingredient
+
 
 class Category(Base, TimestampMixin):
     __tablename__ = "categories"
@@ -13,7 +14,11 @@ class Category(Base, TimestampMixin):
     _name: Mapped[str] = mapped_column(
         String(100), unique=True, nullable=False, name="name"
     )
-    ingredients: Mapped[List["Ingredient"]] = relationship(back_populates="category")
+    ingredients: Mapped[list["Ingredient"]] = relationship(
+        "Ingredient",
+        secondary="ingredient_category",
+        back_populates="categories",
+    )
 
     @property
     def name(self) -> str:

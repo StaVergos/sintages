@@ -1,12 +1,14 @@
 from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 from src.db.models.ingredients import Ingredient
+from src.db.models.categories import Category
 from src.api.ingredients.schemas import (
     GetIngredientSchema,
     CreateIngredientSchema,
     UpdateIngredientSchema,
 )
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from src.api.common.schemas import CategoryRelationshipSchema
 from src.core.exceptions import ErrorException
 from src.core.enums import ErrorKind
 
@@ -43,6 +45,26 @@ class IngredientRepository:
         self.db.refresh(ingredient)
         return GetIngredientSchema.model_validate(ingredient)
 
+    def get_categories(
+        self, categories: list[CategoryRelationshipSchema]
+    ) -> list[Category]:
+        if not categories:
+            return []
+        categories_ids = [cat.id for cat in categories]
+        categories = (
+            self.db.query(Category).filter(Category.id.in_(categories_ids)).all()
+        )
+        return categories
+        # exist_categories = {cat.id for cat in categories}
+        # missing_ids = set(categories) - exist_categories
+        # if missing_ids:
+        #     raise ErrorException(
+        #         code=status.HTTP_404_NOT_FOUND,
+        #         message=f"Categories do not exist: {[cat.id for cat in missing_ids]}",
+        #         kind=ErrorKind.NOT_FOUND,
+        #         source=f"{self.repo_name}.get_categories",
+        #     )
+
     def create_ingredient(
         self, ingredient_data: CreateIngredientSchema
     ) -> GetIngredientSchema:
@@ -50,7 +72,7 @@ class IngredientRepository:
             new_ingredient = Ingredient(
                 name=ingredient_data.name,
                 is_vegan=ingredient_data.is_vegan,
-                category_id=ingredient_data.category_id,
+                categories=self.get_categories(ingredient_data.categories),
             )
             return self.add_ingredient(new_ingredient)
         except IntegrityError:
@@ -58,13 +80,6 @@ class IngredientRepository:
                 code=status.HTTP_409_CONFLICT,
                 message="Ingredient name already exists",
                 kind=ErrorKind.CONFLICT,
-                source=f"{self.repo_name}.create_ingredient",
-            )
-        except Exception:
-            raise ErrorException(
-                code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                message="Internal server error",
-                kind=ErrorKind.INTERNAL,
                 source=f"{self.repo_name}.create_ingredient",
             )
 
@@ -77,9 +92,12 @@ class IngredientRepository:
         if not ingredient:
             raise HTTPException(status_code=404, detail="Ingredient not found")
         try:
-            ingredient.name = ingredient_data.name
-            ingredient.is_vegan = ingredient_data.is_vegan
-            ingredient.category_id = ingredient_data.category_id
+            if ingredient_data.name is not None:
+                ingredient.name = ingredient_data.name
+            if ingredient_data.is_vegan is not None:
+                ingredient.is_vegan = ingredient_data.is_vegan
+            if ingredient_data.categories is not None:
+                ingredient.categories = self.get_categories(ingredient_data.categories)
             self.db.commit()
             self.db.refresh(ingredient)
             return GetIngredientSchema.model_validate(ingredient)
