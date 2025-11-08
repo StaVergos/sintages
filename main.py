@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-
 from src.api.users.routes import router as users_router
 from src.api.ingredients.routes import router as ingredients_router
 from src.api.categories.routes import router as categories_router
