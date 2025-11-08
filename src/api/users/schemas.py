@@ -25,3 +25,7 @@ class GetUserSchema(UserSchema):
     id: int = Field(..., examples=[1])
     created_at: datetime = Field(..., examples=["2023-10-01T12:00:00Z"])
     updated_at: datetime | None = Field(examples=["2023-10-01T12:00:00Z"], default=None)
+
+
+class UserinDB(UserSchema):
+    password_hash: str
