@@ -8,6 +8,7 @@ from src.api.auth.schemas import Token, TokenData
 from src.api.users.schemas import UserSchema, UserinDB
 from src.core.security import pwd_context
 
+
 SECRET_KEY = "bfd15cd68d281ecfff170330fce49e6868bd6576a7808becb26df1ac137ed8c3"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
