@@ -15,7 +15,7 @@ def test_create_ingredient(client: TestClient, category_factory: callable):
     )
 
     resp = client.post("/ingredients", json=payload.model_dump())
-    assert resp.status_code == 200
+    assert resp.status_code == 201
     data = resp.json()
     assert data["name"] == payload.name.capitalize()
     expected_categories = [{"id": c.id, "name": c.name} for c in [c1, c2]]
