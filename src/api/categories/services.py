@@ -11,6 +11,7 @@ from src.db.models.ingredients import Ingredient
 from src.db.models.categories import Category
 from src.core.exceptions import ErrorException
 from src.core.enums import ErrorKind
+from src.core.logging import logger
 
 
 class CategoryRepository:
@@ -66,13 +67,14 @@ class CategoryRepository:
                 kind=ErrorKind.CONFLICT,
                 source=f"{self.repo_name}.create_category",
             )
-        # except Exception as e:
-        #     raise ErrorException(
-        #         code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        #         message=f"Internal server error: {str(e)}",
-        #         kind=ErrorKind.INTERNAL,
-        #         source=f"{self.repo_name}.create_category",
-        #     )
+        except Exception as e:
+            logger.error(f"Unexpected error in create_category: {e}")
+            raise ErrorException(
+                code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                message="Internal server error",
+                kind=ErrorKind.INTERNAL,
+                source=f"{self.repo_name}.create_category",
+            )
 
     def update_category(
         self, category_id: int, category_data: UpdateCategorySchema
