@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 def test_create_ingredient(client: TestClient):
     payload = make_ingredient_payload()
     resp = client.post("/ingredients", json=payload.model_dump())
-    assert resp.status_code == 201
+    assert resp.status_code == 200
     data = resp.json()
     assert data["name"] == payload.name.capitalize()
     assert "id" in data

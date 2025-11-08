@@ -1,9 +1,8 @@
-from typing import Optional, List
+from typing import Optional
 from src.db.base import Base, TimestampMixin
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.db.models.categories import Category
-from src.db.models.recipes import Recipe
 
 
 class Ingredient(Base, TimestampMixin):
@@ -18,7 +17,6 @@ class Ingredient(Base, TimestampMixin):
         ForeignKey("categories.id"), nullable=True
     )
     category: Mapped["Category"] = relationship(back_populates="ingredients")
-    recipes: Mapped[List["Recipe"]] = relationship(back_populates="ingredient")
 
     @property
     def name(self) -> str:
