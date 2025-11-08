@@ -12,7 +12,6 @@ from src.db.base import Base
 from src.db.models.users import User  # noqa: F401
 from src.db.models.ingredients import Ingredient  # noqa: F401
 from src.db.models.categories import Category  # noqa: F401
-from src.db.models.recipes import Recipe, RecipeIngredient  # noqa: F401
 
 alembic_config = context.config
 

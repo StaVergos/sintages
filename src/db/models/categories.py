@@ -6,7 +6,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 if TYPE_CHECKING:
     from src.db.models.ingredients import Ingredient
 
-
 class Category(Base, TimestampMixin):
     __tablename__ = "categories"
 

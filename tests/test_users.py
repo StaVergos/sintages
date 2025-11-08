@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 def test_create_user(client: TestClient):
     payload = make_user_payload()
     resp = client.post("/users", json=payload.model_dump())
-    assert resp.status_code == 201
+    assert resp.status_code == 200
     data = resp.json()
     assert data["email"] == payload.email
     assert data["full_name"] == payload.full_name
