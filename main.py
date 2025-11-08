@@ -5,7 +5,6 @@ from src.api.users.routes import router as users_router
 from src.api.ingredients.routes import router as ingredients_router
 from src.api.categories.routes import router as categories_router
 from src.api.recipes.routes import router as recipes_router
-from src.api.auth.auth import router as auth_router
 from src.core.schemas import ErrorSchema
 from src.core.exceptions import ErrorException
 from src.core.logging import setup_logging
@@ -33,7 +32,6 @@ app.include_router(users_router, prefix="/users", tags=["users"])
 app.include_router(ingredients_router, prefix="/ingredients", tags=["ingredients"])
 app.include_router(categories_router, prefix="/categories", tags=["categories"])
 app.include_router(recipes_router, prefix="/recipes", tags=["recipes"])
-app.include_router(auth_router, prefix="/auth", tags=["auth"])
 
 
 @app.get("/health")
