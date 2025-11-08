@@ -12,6 +12,7 @@ dependencies = [
     "httpx>=0.28.1",
     "ipython>=9.6.0",
     "loguru>=0.7.3",
+    "pyjwt==2.10.1",
     "passlib[argon2]>=1.7.4",
     "psycopg2-binary>=2.9.10",
     "pydantic-settings>=2.11.0",
