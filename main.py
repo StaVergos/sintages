@@ -7,6 +7,9 @@ from src.api.categories.routes import router as categories_router
 from src.api.recipes.routes import router as recipes_router
 from src.core.schemas import ErrorSchema
 from src.core.exceptions import ErrorException
+from src.core.logging import setup_logging
+
+setup_logging()
 
 app = FastAPI()
 
