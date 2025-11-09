@@ -4,8 +4,8 @@ from fastapi import Depends, APIRouter, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import jwt
 from jwt.exceptions import InvalidTokenError
-from src.api.auth.schemas import Token, TokenData
-from src.api.users.schemas import UserSchema, UserinDB
+from src.api.auth.schemas1 import Token, TokenData
+from src.api.users.schemas2 import UserSchema, UserinDB
 from src.core.security import pwd_context
 
 
