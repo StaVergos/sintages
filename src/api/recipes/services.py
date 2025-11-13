@@ -1,4 +1,4 @@
-from fastapi import status
+from fastapi import HTTPException, status
 from src.db.models.recipes import Recipe, RecipeIngredient
 from src.db.models.ingredients import Ingredient
 from src.db.models.users import User
@@ -7,6 +7,7 @@ from src.api.recipes.schemas import (
     CreateRecipeSchema,
     DeleteRecipeSchema,
     RecipeIngredientPayload,
+    UpdateRecipeSchema,
 )
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -87,6 +88,17 @@ class RecipeRepository:
             for item in items
         ]
 
+    def get_ingredients(
+        self, ingredients: list[RecipeIngredientPayload]
+    ) -> list[RecipeIngredient]:
+        if not ingredients:
+            return []
+        ingredients_ids = [ing.ingredient_id for ing in ingredients]
+        ingredients = (
+            self.db.query(Ingredient).filter(Ingredient.id.in_(ingredients_ids)).all()
+        )
+        return ingredients
+
     def create_recipe(self, recipe_data: CreateRecipeSchema) -> GetRecipeSchema:
         user = self.db.query(User).filter(User.id == recipe_data.user_id).first()
         if not user:
@@ -131,3 +143,38 @@ class RecipeRepository:
         self.db.delete(recipe)
         self.db.commit()
         return response
+
+    def update_recipe_by_id(
+        self, recipe_id: int, recipe_data: UpdateRecipeSchema
+    ) -> GetRecipeSchema:
+        recipe = self.db.query(Recipe).filter(Recipe.id == recipe_id).first()
+        if not recipe:
+            raise HTTPException(
+                status_code=404,
+                detail="Recipe not found",
+                kind=ErrorKind.NOT_FOUND,
+                source=f"{self.repo_name}.update_recipe",
+            )
+        try:
+            if recipe_data.name is not None:
+                recipe.name = recipe_data.name
+            if recipe_data.cooking_time is not None:
+                recipe.cooking_time = recipe_data.cooking_time
+            if recipe_data.difficulty_level is not None:
+                recipe.difficulty_level = recipe_data.difficulty_level
+            if recipe_data.portions is not None:
+                recipe.portions = recipe_data.portions
+            if recipe_data.instructions is not None:
+                recipe.instructions = recipe_data.instructions
+            if recipe_data.ingredients is not None:
+                recipe.ingredients = self.get_ingredients(recipe_data.ingredients)
+            self.db.commit()
+            self.db.refresh(recipe)
+            return GetRecipeSchema.model_validate(recipe)
+        except IntegrityError:
+            raise ErrorException(
+                code=status.HTTP_409_CONFLICT,
+                message="Recipe name already exists",
+                kind=ErrorKind.CONFLICT,
+                source=f"{self.repo_name},update_recipe",
+            )
