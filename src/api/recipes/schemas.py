@@ -45,5 +45,18 @@ class GetRecipeSchema(RecipeBaseSchema):
     )
 
 
+class UpdateRecipeSchema(BaseSchema):
+    name: str | None = Field(examples=["Tzatziki"], default=None)
+    cooking_time: int | None = Field(examples=[30], ge=1, default=None)
+    difficulty_level: DifficultyLevel | None = Field(
+        examples=["EASY", "MEDIUM", "HARD"], default=None
+    )
+    portions: int | None = Field(examples=[4], ge=1, default=None)
+    instructions: str | None = Field(examples=["Mix all ingredients."], default=None)
+    ingredients: list[RecipeIngredientPayload] = Field(
+        default_factory=list, examples=[[{"ingredient_id": 1, "quantity": "100 grams"}]]
+    )
+
+
 class DeleteRecipeSchema(GetRecipeSchema):
     pass
