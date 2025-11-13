@@ -3,6 +3,7 @@ from src.api.recipes.schemas import (
     CreateRecipeSchema,
     GetRecipeSchema,
     DeleteRecipeSchema,
+    UpdateRecipeSchema,
 )
 from src.api.recipes.services import RecipeRepository
 from src.api.recipes.dependencies import get_recipe_repository
@@ -70,6 +71,23 @@ async def create_recipe(
     recipe_repository: RecipeRepository = Depends(get_recipe_repository),
 ) -> GetRecipeSchema:
     return recipe_repository.create_recipe(recipe)
+
+
+@router.put(
+    "/{recipe_id}",
+    response_model=UpdateRecipeSchema,
+    responses={
+        409: {"model": ErrorResponse, "description": "Ingredient already exists"},
+        422: {"model": ErrorResponse, "description": "Invalid Ingredient input format"},
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
+)
+async def update_recipe(
+    recipe_id: int,
+    recipe: UpdateRecipeSchema,
+    recipe_repository: RecipeRepository = Depends(get_recipe_repository),
+) -> GetRecipeSchema:
+    return recipe_repository.update_recipe_by_id(recipe_id, recipe)
 
 
 @router.delete(
