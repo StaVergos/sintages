@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from datetime import datetime, timezone
+from datetime import datetime
 
 
 class Token(BaseModel):
@@ -9,4 +9,4 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: str
-    expiration_timestamp: datetime = datetime.now(timezone.utc)
+    expiration_timestamp: datetime
