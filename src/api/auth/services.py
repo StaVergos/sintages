@@ -1,0 +1,91 @@
+from datetime import datetime, timedelta
+from typing import Annotated
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+import jwt
+from jwt.exceptions import InvalidTokenError
+import os
+from pytest import Session
+from src.api.auth.schemas import TokenData
+from src.api.users.schemas import UserSchema
+from src.core.security import verify_password
+from dotenv import load_dotenv, find_dotenv
+from src.db.postgresql import get_db
+
+load_dotenv(find_dotenv())
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+ALGORITHM = os.environ.get("ALGORITHM")
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+
+class UserInDB(UserSchema):
+    hashed_password: str
+
+
+def get_user(db, username: str):
+    if username in db:
+        user_dict = db[username]
+        return UserInDB(**user_dict)
+
+
+def authenticate_user(
+    db: Session,
+    username: str,
+    password: str,
+):
+    user = get_user(db, username)
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user
+
+
+def create_access_token(
+    data: TokenData,
+    expiration_timestamp: datetime,
+    expires_delta: timedelta | None = None,
+):
+    to_encode = data.model_copy()
+    if expires_delta:
+        expire = expiration_timestamp + expires_delta
+    else:
+        expire = expiration_timestamp + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": int(expire.timestamp())})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    db: Session = Depends(get_db),
+) -> UserSchema:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid username or password",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except InvalidTokenError:
+        raise credentials_exception
+    user = get_user(db, username=token_data.username)
+    if user is None:
+        raise credentials_exception
+    return user
+
+
+def get_current_active_user(
+    current_user: Annotated[UserSchema, Depends(get_current_user)],
+):
+    if not current_user.is_active:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
