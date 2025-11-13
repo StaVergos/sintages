@@ -4,7 +4,7 @@ from src.api.users.routes import router as users_router
 from src.api.ingredients.routes import router as ingredients_router
 from src.api.categories.routes import router as categories_router
 from src.api.recipes.routes import router as recipes_router
-from src.api.auth.auth import router as auth_router
+from src.api.auth.routes import router as auth_router
 from src.core.schemas import ErrorSchema
 from src.core.exceptions import ErrorException
 from src.core.logging import setup_logging
