@@ -10,3 +10,8 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: str
     expiration_timestamp: datetime
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
