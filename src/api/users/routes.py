@@ -84,8 +84,6 @@ async def update_user(
 
 @router.get("/me", response_model=GetUserSchema)
 async def read_users_me(
-    current_user: Annotated[
-        User, Depends(services.AuthRepository.get_current_active_user)
-    ],
+    current_user: Annotated[User, Depends(services.get_current_active_user)],
 ):
     return current_user
