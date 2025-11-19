@@ -27,6 +27,7 @@ def confirm_token_expire_minutes() -> int:
 
 
 def create_access_token(username: str):
+    logger.debug("Creating access token", extra={"username": username})
     expire = datetime.now(datetime.utc) + timedelta(config.ACCESS_TOKEN_EXPIRE_MINUTES)
     jwt_data = {"sub": username, "exp": expire, "type": "access"}
     encoded_jwt = jwt.encode(
@@ -35,12 +36,12 @@ def create_access_token(username: str):
     return encoded_jwt
 
 
-def create_confirmation_token(email: str):
-    logger.debug("Creating confirmation token", extra={"email": email})
+def create_confirmation_token(username: str):
+    logger.debug("Creating confirmation token", extra={"username": username})
     expire = datetime.now(datetime.utc) + timedelta(
         minutes=confirm_token_expire_minutes()
     )
-    jwt_data = {"sub": email, "exp": expire, "type": "confirmation"}
+    jwt_data = {"sub": username, "exp": expire, "type": "confirmation"}
     encoded_jwt = jwt.encode(
         jwt_data, key=config.SECRET_KEY, algorithm=config.ALGORITHM
     )
@@ -59,8 +60,8 @@ def get_subject_for_token_type(
     except jwt.PyJWTError as e:
         raise create_credentials_exception("Invalid token") from e
 
-    email = payload.get("sub")
-    if email is None:
+    username = payload.get("sub")
+    if username is None:
         raise create_credentials_exception("Token is missing 'sub' field")
 
     token_type = payload.get("type")
@@ -69,16 +70,18 @@ def get_subject_for_token_type(
             f"Token has incorrect type, expected '{type}'"
         )
 
-    return email
+    return username
 
 
 def get_user(self, username: str):
+    logger.debug("Fetching user from the database", extra={"username": username})
     user = self.db.query(User).filter(User.username == username).first()
     if user:
         return user
 
 
 def authenticate_user(self, username: str, password: str):
+    logger.debug("Authenticating user", extra={"username": username})
     user = self.db.query(User).filter(User.username == username).first()
     user = get_user(username)
     if not user:
