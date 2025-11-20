@@ -6,3 +6,8 @@ class ErrorKind(StrEnum):
     INTERNAL = "InternalError"
     CONFLICT = "ConflictError"
     VALIDATION = "ValidationError"
+
+
+class TypeKind(StrEnum):
+    access = "access"
+    confirmation = "confirmation"
