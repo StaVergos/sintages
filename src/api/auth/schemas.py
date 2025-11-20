@@ -15,3 +15,9 @@ class TokenData(BaseModel):
 class LoginRequest(BaseModel):
     username: str
     password: str
+
+
+class JWTData(BaseModel):
+    sub: str
+    exp: datetime
+    type: str
