@@ -10,4 +10,4 @@ router = APIRouter()
 async def login(user: LoginRequest) -> Token:
     user = authenticate_user(user.username, user.password)
     access_token = create_access_token(user.username)
-    return {"access_token": access_token, "token_type": "bearer"}
+    return Token(access_token=access_token, token_type="bearer")
