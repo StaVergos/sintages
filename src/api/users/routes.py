@@ -1,8 +1,15 @@
+from typing import Annotated
 from fastapi import APIRouter, Depends
-from src.api.users.schemas import CreateUserSchema, GetUserSchema, UpdateUserSchema
+from src.api.auth import services
+from src.api.users.schemas import (
+    CreateUserSchema,
+    GetUserSchema,
+    UpdateUserSchema,
+)
 from src.api.users.services import UserRepository
 from src.api.users.dependencies import get_user_repository
 from src.core.schemas import ErrorResponse
+from src.db.models.users import User
 
 router = APIRouter()
 
@@ -73,3 +80,10 @@ async def update_user(
     user_repository: UserRepository = Depends(get_user_repository),
 ) -> GetUserSchema:
     return user_repository.update_user(user_id, user)
+
+
+@router.get("/me", response_model=GetUserSchema)
+async def read_users_me(
+    current_user: Annotated[User, Depends(services.get_current_active_user)],
+):
+    return current_user

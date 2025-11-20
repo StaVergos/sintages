@@ -1,11 +1,15 @@
 from fastapi import HTTPException, status
-from src.api.users.schemas import CreateUserSchema, GetUserSchema, UpdateUserSchema
-from src.db.models.users import User
-from src.core.security import hash_password
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from src.core.exceptions import ErrorException
 from src.core.enums import ErrorKind
+from src.api.users.schemas import (
+    CreateUserSchema,
+    GetUserSchema,
+    UpdateUserSchema,
+)
+from src.db.models.users import User
+from src.core.security import hash_password
 
 
 class UserRepository:
