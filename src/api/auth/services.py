@@ -1,13 +1,16 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import logging
-from typing import Annotated, Literal
+from src.api.auth.schemas import JWTData
+from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 import jwt
 from src.api.users.schemas import UserSchema
+from src.core.enums import TypeKind
 from src.core.security import verify_password
 from src.db.models.users import User
 from src.core.config import config
+from src.core.dependencies import get_db_context
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +30,8 @@ def confirm_token_expire_minutes() -> int:
 
 
 def create_access_token(username: str):
-    logger.debug("Creating access token", extra={"username": username})
-    expire = datetime.now(datetime.utc) + timedelta(config.ACCESS_TOKEN_EXPIRE_MINUTES)
-    jwt_data = {"sub": username, "exp": expire, "type": "access"}
+    expire = datetime.now(timezone.utc) + timedelta(config.ACCESS_TOKEN_EXPIRE_MINUTES)
+    jwt_data = JWTData(sub=username, exp=expire, type="access").model_dump(mode="json")
     encoded_jwt = jwt.encode(
         jwt_data, key=config.SECRET_KEY, algorithm=config.ALGORITHM
     )
@@ -37,8 +39,7 @@ def create_access_token(username: str):
 
 
 def create_confirmation_token(username: str):
-    logger.debug("Creating confirmation token", extra={"username": username})
-    expire = datetime.now(datetime.utc) + timedelta(
+    expire = datetime.now(timezone.utc) + timedelta(
         minutes=confirm_token_expire_minutes()
     )
     jwt_data = {"sub": username, "exp": expire, "type": "confirmation"}
@@ -49,7 +50,8 @@ def create_confirmation_token(username: str):
 
 
 def get_subject_for_token_type(
-    token: str, type: Literal["access", "confirmation"]
+    token: str,
+    type: TypeKind,
 ) -> str:
     try:
         payload = jwt.decode(
@@ -73,20 +75,20 @@ def get_subject_for_token_type(
     return username
 
 
-def get_user(self, username: str):
+def get_user(username: str):
     logger.debug("Fetching user from the database", extra={"username": username})
-    user = self.db.query(User).filter(User.username == username).first()
+    with get_db_context() as db:
+        user = db.query(User).filter(User.username == username).first()
     if user:
         return user
 
 
-def authenticate_user(self, username: str, password: str):
+def authenticate_user(username: str, password: str):
     logger.debug("Authenticating user", extra={"username": username})
-    user = self.db.query(User).filter(User.username == username).first()
-    user = get_user(username)
+    user = get_user(username=username)
     if not user:
         raise create_credentials_exception("Invalid username or password")
-    if not verify_password(password, User.hashed_password):
+    if not verify_password(password, user.hashed_password):
         raise create_credentials_exception("Invalid password")
     return user
 
