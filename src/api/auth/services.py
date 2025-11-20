@@ -44,7 +44,7 @@ def create_confirmation_token(username: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(
         minutes=confirm_token_expire_minutes()
     )
-    jwt_data = {"sub": username, "exp": expire, "type": "confirmation"}
+    jwt_data = {"username": username, "expire": expire, "type": "confirmation"}
     encoded_jwt = jwt.encode(
         jwt_data, key=config.SECRET_KEY, algorithm=config.ALGORITHM
     )
@@ -64,9 +64,9 @@ def get_subject_for_token_type(
     except jwt.PyJWTError as e:
         raise create_credentials_exception("Invalid token") from e
 
-    username = payload.get("sub")
+    username = payload.get("username")
     if username is None:
-        raise create_credentials_exception("Token is missing 'sub' field")
+        raise create_credentials_exception("Token is missing 'username' field")
 
     token_type = payload.get("type")
     if token_type is None or token_type != type:
