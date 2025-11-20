@@ -44,7 +44,9 @@ def create_confirmation_token(username: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(
         minutes=confirm_token_expire_minutes()
     )
-    jwt_data = {"username": username, "expire": expire, "type": "confirmation"}
+    jwt_data = JWTData(
+        username=username, expire=expire, type="confirmation"
+    ).model_dump(mode="json")
     encoded_jwt = jwt.encode(
         jwt_data, key=config.SECRET_KEY, algorithm=config.ALGORITHM
     )
@@ -77,7 +79,7 @@ def get_subject_for_token_type(
     return username
 
 
-def get_user(username: str) -> Optional[User]:
+def get_user(username: str) -> User | None:
     logger.debug("Fetching user from the database", extra={"username": username})
     with get_db_context() as db:
         user = db.query(User).filter(User.username == username).first()
