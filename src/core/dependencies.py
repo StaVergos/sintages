@@ -1,6 +1,7 @@
 import httpx
 from fastapi import Request
 from src.db.postgresql import get_db as get_database
+from contextlib import contextmanager
 
 
 def get_http_client(request: Request) -> httpx.AsyncClient:
@@ -8,4 +9,9 @@ def get_http_client(request: Request) -> httpx.AsyncClient:
 
 
 def get_db():
+    yield from get_database()
+
+
+@contextmanager
+def get_db_context():
     yield from get_database()
