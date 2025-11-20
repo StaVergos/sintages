@@ -6,8 +6,3 @@ class ErrorKind(StrEnum):
     INTERNAL = "InternalError"
     CONFLICT = "ConflictError"
     VALIDATION = "ValidationError"
-
-
-class JWTType(StrEnum):
-    ACCESS = "access"
-    CONFIRMATION = "confirmation"
