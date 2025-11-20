@@ -8,6 +8,6 @@ class ErrorKind(StrEnum):
     VALIDATION = "ValidationError"
 
 
-class TypeKind(StrEnum):
-    access = "access"
-    confirmation = "confirmation"
+class JWTType(StrEnum):
+    ACCESS = "access"
+    CONFIRMATION = "confirmation"

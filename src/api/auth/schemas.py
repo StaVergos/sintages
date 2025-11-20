@@ -20,4 +20,4 @@ class LoginRequest(BaseModel):
 class JWTData(BaseModel):
     username: str
     expire: datetime
-    type: str = "Bearer"
+    type: str

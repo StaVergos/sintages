@@ -1,16 +1,16 @@
 from datetime import datetime, timedelta, timezone
 import logging
 from src.api.auth.schemas import JWTData
-from typing import Annotated, Optional
+from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 import jwt
 from src.api.users.schemas import UserSchema
-from src.core.enums import TypeKind
 from src.core.security import verify_password
 from src.db.models.users import User
 from src.core.config import config
 from src.core.dependencies import get_db_context
+from src.core.enums import JWTType
 
 logger = logging.getLogger(__name__)
 
@@ -31,9 +31,9 @@ def confirm_token_expire_minutes() -> int:
 
 def create_access_token(username: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(config.ACCESS_TOKEN_EXPIRE_MINUTES)
-    jwt_data = JWTData(username=username, expire=expire, type="access").model_dump(
-        mode="json"
-    )
+    jwt_data = JWTData(
+        username=username, expire=expire, type=JWTType.ACCESS
+    ).model_dump(mode="json")
     encoded_jwt = jwt.encode(
         jwt_data, key=config.SECRET_KEY, algorithm=config.ALGORITHM
     )
@@ -45,7 +45,7 @@ def create_confirmation_token(username: str) -> str:
         minutes=confirm_token_expire_minutes()
     )
     jwt_data = JWTData(
-        username=username, expire=expire, type="confirmation"
+        username=username, expire=expire, type=JWTType.CONFIRMATION
     ).model_dump(mode="json")
     encoded_jwt = jwt.encode(
         jwt_data, key=config.SECRET_KEY, algorithm=config.ALGORITHM
@@ -55,7 +55,7 @@ def create_confirmation_token(username: str) -> str:
 
 def get_subject_for_token_type(
     token: str,
-    type: TypeKind,
+    type: JWTType,
 ) -> str:
     try:
         payload = jwt.decode(
