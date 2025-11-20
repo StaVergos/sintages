@@ -10,7 +10,7 @@ from src.core.security import verify_password
 from src.db.models.users import User
 from src.core.config import config
 from src.core.dependencies import get_db_context
-from src.core.enums import JWTType
+from src.api.auth.enums import JWTType
 
 logger = logging.getLogger(__name__)
 
