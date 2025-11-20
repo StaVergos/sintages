@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 import logging
 from src.api.auth.schemas import JWTData
-from typing import Annotated
+from typing import Annotated, Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 import jwt
@@ -29,16 +29,18 @@ def confirm_token_expire_minutes() -> int:
     return 1440
 
 
-def create_access_token(username: str):
+def create_access_token(username: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(config.ACCESS_TOKEN_EXPIRE_MINUTES)
-    jwt_data = JWTData(sub=username, exp=expire, type="access").model_dump(mode="json")
+    jwt_data = JWTData(username=username, expire=expire, type="access").model_dump(
+        mode="json"
+    )
     encoded_jwt = jwt.encode(
         jwt_data, key=config.SECRET_KEY, algorithm=config.ALGORITHM
     )
     return encoded_jwt
 
 
-def create_confirmation_token(username: str):
+def create_confirmation_token(username: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(
         minutes=confirm_token_expire_minutes()
     )
@@ -75,7 +77,7 @@ def get_subject_for_token_type(
     return username
 
 
-def get_user(username: str):
+def get_user(username: str) -> Optional[User]:
     logger.debug("Fetching user from the database", extra={"username": username})
     with get_db_context() as db:
         user = db.query(User).filter(User.username == username).first()
@@ -83,7 +85,7 @@ def get_user(username: str):
         return user
 
 
-def authenticate_user(username: str, password: str):
+def authenticate_user(username: str, password: str) -> User:
     logger.debug("Authenticating user", extra={"username": username})
     user = get_user(username=username)
     if not user:
@@ -93,7 +95,7 @@ def authenticate_user(username: str, password: str):
     return user
 
 
-def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> User:
     username = get_subject_for_token_type(token, "access")
     user = get_user(username=username)
     if user is None:
@@ -103,7 +105,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 
 def get_current_active_user(
     current_user: Annotated[UserSchema, Depends(get_current_user)],
-):
+) -> UserSchema:
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
